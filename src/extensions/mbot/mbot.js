@@ -614,6 +614,7 @@
 	    status = false;
 	}
     function getMakeblockAppStatus() {
+    	console.log("in getMakeblockAppStatus");
         chrome.runtime.sendMessage(makeblockAppID, {message: "STATUS"}, function (response) {
             if (response === undefined) { //Chrome app not found
                 console.log("Chrome app not found");
@@ -627,7 +628,7 @@
             else {// successfully connected
                 if (mStatus !==2) {
                     console.log("Connected");
-                    console.log("response.devices: " + response.devices):
+                    console.log("response.devices: " + response.devices);
                     mConnection = chrome.runtime.connect(makeblockAppID);
                     mConnection.onMessage.addListener(onMsgApp);
                 }

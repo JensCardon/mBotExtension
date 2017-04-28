@@ -107,7 +107,7 @@ define(function (require) {
     el:"#scratch-x-panel",
     methods:{
       openProject:function(){
-        window.open('http://scratchx.org/?url=https://jenscardon.github.io/mBotExtension/project.sbx&id='+chrome.runtime.id+'#scratch');
+        window.open('http://scratchx.org/?url=https://jenscardon.github.io/mBotExtension/src/extensions/mbot/mbot.js&id='+chrome.runtime.id+'#scratch');
         //window.open('http://scratchx.org/?url=http://mbotx.github.io/scratchx-mbot/project.sbx&id='+chrome.runtime.id+'#scratch');
       
       },

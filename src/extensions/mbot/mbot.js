@@ -614,6 +614,7 @@
 	    status = false;
 	}
     function getMakeblockAppStatus() {
+    	console.log("in getMakeblockAppStatus");
         chrome.runtime.sendMessage(makeblockAppID, {message: "STATUS"}, function (response) {
             if (response === undefined) { //Chrome app not found
                 console.log("Chrome app not found");

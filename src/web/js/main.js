@@ -13,6 +13,7 @@ define(function (require) {
   console.log("id:",chrome.runtime.id);
   const self = this;
   var hid = new HID();
+  var hids = [];
   var serial = new Serial();
   var bluetooth = new Bluetooth();
   var app = new Vue({
@@ -30,21 +31,140 @@ define(function (require) {
       }
     }
   });
-  var hidSelector = new Vue({
-    el: '#hid-devices',
+  var hidConnected = new Vue({
+    el: '#hid_connected',
     data: {
       selected: [],
       options: []
     },
     methods: {
+      disconnect_all: function(e){
+        console.log("in disconnect_all");
+      },
+      disconnect_selected: function(e){
+        console.log("in disconnect_selected");
+      },
+      connect_all: function(e) {
+        console.log("hidConnected fault");
+      },
+      connect_selected: function(e){
+        console.log("hidConnected fault");
+      }
+    }
+  });
+  var hidDisconnected = new Vue({
+    el: '#hid_disconnected',
+    data: {
+      selected: [],
+      options: []
+    },
+    methods: {
+      connect_all: function(e) {
+        if(this.options.length == 0){
+          console.log("no devices found");
+        }
+        else{
+          for(var i=this.options.length-1; i >= 0 ; i--){
+            var device_id = this.options[i].value;
+            function checkConnected(hid){
+              return hid.deviceId == device_id;
+            }
+            //connect device if not already connected
+            if(hids.find(checkConnected) === undefined){
+              var hid = new HID(device_id);
+              hids.push(hid);
+              hid.connect(device_id);
+
+              //add to HID connected
+              var connected_options = hidConnected._data.options;
+              connected_options.push({ text: this.options[i].text, value: device_id });
+              hidConnected._data.options = connected_options;
+
+              //remove options from HID disconnected
+              function findID(obj){
+                return obj.value == device_id;
+              }
+              var disconnected_options = this.options;
+              var index = disconnected_options.findIndex(findID);
+              if(index > -1){
+                disconnected_options.splice(index, 1);
+                this.options = disconnected_options;
+                //console.log("disconnected options aangepast: " + this.options);
+                //console.log("connected options aangepast: " + hidConnected._data.options);
+              } else {
+                console.log("something horrible went wrong ==> this shouldn't happen");
+              }
+              console.log("Device with id:" + device_id + " connected");
+            }
+            else {
+              console.log("Device with id:" + device_id + " already connected ==> this shouldn't happen");
+            }
+          }
+        }
+      },
+      connect_selected: function(e){
+        console.log("in connect selected");
+      },
+      disconnect_all: function(e){
+        var connected_options = hidConnected._data.options;
+        if(connected_options.length != 0){
+          this.options = connected_options;
+          hidConnected._data.options = []; 
+          hids = [];
+          for(var i=0; i<connected_options.length; i++){
+            console.log("Device with id:" + connected_options[i].value + " disconnected");
+          }
+        } else {
+          console.log("no devices found");
+        }
+      },
+      disconnect_selected: function(e){
+        console.log("hidDisconnected fault");
+      }
+    }
+  });
+
+/*var hidSelector = new Vue({
+    el: '#bluetooth-devices',
+    data: {
+      selected: [],
+      options: []
+    },
+    methods: {
+        disconnect: function (e) {
+          if (selected.length != 0){
+            //find selected in hids
+            for(var i = 0; i < hids.length; i++){
+              for(var j = 0; j < this.selected.length; j++){
+                if(hids[i] == this.selected[j]){
+                  console.log("selected found in hids");
+                  //TODO: remove them from hids
+                  self.selected
+                }
+              }
+          }
+        }
+        else {
+          console.log("no devices selected")
+        }
+      },
+
         connect: function (e) {
+          console.log("selected: " + this.selected);
           if(hid.connectionIds.length != 0){
             console.log("disconnect");
             hid.disconnect().then(function(){
               e.target.innerHTML = "Connect";
             })
           }else{
-            var selectedDevices = this.selected;
+            for(var i = 0; i < hids.length; i++){
+              for(var j = 0; j < this.selected.length; j++){
+                if(hids[i] == this.selected[j]){
+                  console.log("some of the selected devices are already connected");
+                  break;
+                }
+              }
+            }
             for (var i = 0; i < selectedDevices.length; i++) {
               console.log("selected: " + selectedDevices[i]);
               hid.connect(selectedDevices[i]).then(function(suc){
@@ -56,7 +176,8 @@ define(function (require) {
           }
         }
     }
-  });
+  });*/
+
   var serialSelector = new Vue({
     el: '#serial-devices',
     data: {
@@ -145,12 +266,12 @@ define(function (require) {
   function updateHIDList(devices){
     var options = [];
     for(var i=0;i<devices.length;i++){
-      options.push({ text: devices[i].productName, value: devices[i].deviceId });
+      options.push({ text: devices[i].productName + devices[i].deviceId, value: devices[i].deviceId });
     }
-    hidSelector._data.options = options;
-    if(options.length>0){
-      hidSelector._data.selected = [options[0].value];
-    }
+    hidDisconnected._data.options = options;
+ /*   if(options.length>0){
+      hidDisconnected._data.selected = [options[0].value];
+    }*/
   }
   function updateSerialList(devices){
     var options = [];

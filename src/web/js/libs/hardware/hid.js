@@ -1,15 +1,15 @@
 define(function (require) {
-    function HID(){
+    function HID(deviceId){
         const self = this;
         const EventEmitter = require("../events/emitter.js");
         const DeviceEvent = require("../events/deviceevent.js");
-        self.connectionIds = [];
+        self.connectionId = -1;
+        self.deviceId = deviceId;
         self.emitter = new EventEmitter();
         self.buffer = [];
         self.devices = [];
         self.port = chrome.runtime.connect({name: "hid"});
         var i=0;
-        var connectedDevices = 0;
         function updateHandle(msg){
             switch(msg.event){
                 case DeviceEvent.DEVICE_ADDED:{
@@ -56,22 +56,14 @@ define(function (require) {
             }));
         };
         self.connect = function(deviceId){
-          console.log("in connect");
-          var connectionId;
           return new Promise(((resolve)=>{
-            console.log("in Promise");
               function received(msg){
-                console.log("msg.method: " + msg.method + " deviceId: " + deviceId);
                   self.port.onMessage.removeListener(received);
-                  connectionId = msg.connectionId;
-                  console.log("connectionIds-before: " + self.connectionIds);
-                  self.connectionIds.push(connectionId);
-                  console.log("connectionIds-after: " + self.connectionIds);
-                  var suc = self.connectionIds.length != 0;
+                  self.connectionId = msg.connectionId;
+                  var suc = self.connectionId>-1;
                   resolve(suc);
                   if(suc){
                     self.poll();
-                    console.log("deviceId: " + deviceId + "; msg.connectionId: " + msg.connectionId);
                   }
               }
               self.port.onMessage.addListener(received);
@@ -82,23 +74,19 @@ define(function (require) {
             return new Promise(((resolve)=>{
               function received(msg){
                   self.port.onMessage.removeListener(received);
-                  self.connectionIds = [];
+                  self.connectionId = -1;
                   resolve();
               }
               self.port.onMessage.addListener(received);
-              if(self.connectionIds.length != 0){
-                for (var i = 0; i < self.connectionIds.length; i++){
-                self.port.postMessage({method:"disconnect",connectionId:self.connectionIds[i]});
-                }
+              if(self.connectionId>-1){
+                self.port.postMessage({method:"disconnect",connectionId:self.connectionId});
               }else{
                 resolve();
               }
             }));
         };
         self.poll = function(){
-          for (var i = 0; i < self.connectionIds.length; i++){
-            self.port.postMessage({method:"poll",connectionId:self.connectionIds[i]});
-          }
+            self.port.postMessage({method:"poll",connectionId:self.connectionId});
         };
         self.send = function(data){
             return new Promise(((resolve)=>{
@@ -107,12 +95,15 @@ define(function (require) {
                   resolve();
               }
               self.port.onMessage.addListener(received);
-              self.port.postMessage({method:"send",connectionId:self.connectionIds[0],data:data});
+              self.port.postMessage({method:"send",connectionId:self.connectionId,data:data});
             }));
         };
         self.on = function(event,listener){
             self.emitter.on(event,listener);
         };
+        self.getDevice = function(){
+            return self.deviceId;
+        }
         
         self.list();
         /**/

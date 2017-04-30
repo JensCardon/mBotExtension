@@ -31,9 +31,8 @@
       <div style="float:right;padding-right:11%;">HID connected</div>
     </div>
     <div id="hid_disconnected">
-      <!--<div id="hid_connected">-->
     <select v-model="selected" multiple style="width:40%;min-height:75px;">
-      <option v-for="option in options" v-bind:value="option.value">
+      <option v-for="option in options" v-bind:value="option">
         {{ option.text }}
       </option>
     </select>
@@ -62,8 +61,13 @@
         </span>
       </button>
     </div>
-    <select id="hid_connected" multiple style="width: 40%;min-height: 75px;float:right;"></select>
-  <!-- </div> -->
+    <span id="hid_connected">
+    <select multiple style="width: 40%;min-height: 75px;float:right;"></select>
+    <option v-for="option in options" v-bind:value="option">
+        {{ option.text }}
+      </option>
+    </select>
+    </span>
   </div>
   </div>
 </div>

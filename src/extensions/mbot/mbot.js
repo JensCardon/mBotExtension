@@ -628,7 +628,6 @@
             else {// successfully connected
                 if (mStatus !==2) {
                     console.log("Connected");
-                    console.log("response.devices: " + response.devices);
                     mConnection = chrome.runtime.connect(makeblockAppID);
                     mConnection.onMessage.addListener(onMsgApp);
                 }

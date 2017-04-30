@@ -199,8 +199,8 @@ var hidConnected = new Vue({
     el:"#scratch-x-panel",
     methods:{
       openProject:function(){
-        window.open('http://scratchx.org/?url=https://jenscardon.github.io/mBotExtension/src/extensions/mbot/mbot.js&id='+chrome.runtime.id+'#scratch');
-        //window.open('http://scratchx.org/?url=http://mbotx.github.io/scratchx-mbot/project.sbx&id='+chrome.runtime.id+'#scratch');
+        //window.open('http://scratchx.org/?url=https://jenscardon.github.io/mBotExtension/src/extensions/mbot/mbot.js&id='+chrome.runtime.id+'#scratch');
+        window.open('http://scratchx.org/?url=http://mbotx.github.io/scratchx-mbot/makeblock.js&id='+chrome.runtime.id+'#scratch');
       
       },
       refresh:function(){
@@ -240,11 +240,6 @@ var hidConnected = new Vue({
       options.push({ text: devices[i].productName + devices[i].deviceId, value: devices[i].deviceId });
     }
     hidDisconnected._data.options = options;
-    hidDisconnected._data.selected = options;
-
- /*   if(options.length>0){
-      hidDisconnected._data.selected = [options[0].value];
-    }*/
   }
   function updateSerialList(devices){
     var options = [];

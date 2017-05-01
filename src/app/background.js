@@ -1,5 +1,4 @@
 chrome.app.runtime.onLaunched.addListener(function() {
-  console.log("bg")
   chrome.app.window.create(
       "../../src/web/index.html",
       {

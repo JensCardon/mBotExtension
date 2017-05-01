@@ -1,5 +1,5 @@
 chrome.app.runtime.onLaunched.addListener(function() {
-  console.log("bg");
+  console.log("bg")
   chrome.app.window.create(
       "../../src/web/index.html",
       {
@@ -156,10 +156,15 @@ function setupHID(port){
         });
       }else if(msg.method=="connect"){
         console.log("background: connect");
+        console.log(msg);
         chrome.hid.connect(msg.deviceId, function(connectInfo) {
+          console.log(connectInfo)
             if (!connectInfo) {
-              port.postMessage({method:msg.method,connectionId:[]});
+              console.log("not connected");
+              port.postMessage({method:msg.method,connectionId:-1});
+              console.log(chrome.runtime.lastError); 
             }else{
+              console.log("connected");
               port.postMessage({method:msg.method,connectionId:connectInfo.connectionId});
               hidConnected = true;
             }
@@ -243,10 +248,9 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
     }
 });
 chrome.runtime.onConnect.addListener(function(port){
-  console.log("port: " + port);
+  console.log(port);
   ports.push(port);
   if(port.name=="hid"){
-    console.log("setupHID: " + port);
     setupHID(port);
   }else if(port.name=="serial"){
     setupSerial(port);

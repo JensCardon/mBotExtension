@@ -199,8 +199,8 @@ var hidConnected = new Vue({
     el:"#scratch-x-panel",
     methods:{
       openProject:function(){
-        //window.open('http://scratchx.org/?url=https://jenscardon.github.io/mBotExtension/src/extensions/mbot/mbot.js&id='+chrome.runtime.id+'#scratch');
-        window.open('http://scratchx.org/?url=http://mbotx.github.io/scratchx-mbot/makeblock.js&id='+chrome.runtime.id+'#scratch');
+        window.open('http://scratchx.org/?url=https://jenscardon.github.io/mBotExtension/src/extensions/mbot/mbot.js&id='+chrome.runtime.id+'#scratch');
+        //window.open('http://scratchx.org/?url=http://mbotx.github.io/scratchx-mbot/makeblock.js&id='+chrome.runtime.id+'#scratch');
       
       },
       refresh:function(){
@@ -237,7 +237,7 @@ var hidConnected = new Vue({
   function updateHIDList(devices){
     var options = [];
     for(var i=0;i<devices.length;i++){
-      options.push({ text: devices[i].productName + devices[i].deviceId, value: devices[i].deviceId });
+      options.push({ text: devices[i].productName + " " + devices[i].deviceId, value: devices[i].deviceId });
     }
     hidDisconnected._data.options = options;
   }
@@ -284,7 +284,6 @@ function onRefreshHardware(){
 }
 function onConnectHID(){
   console.log("in onConnectHID");
-  console.log("document.getElementById('connectHID'): " + document.getElementById('connectHID'));
   var msg = {};
   msg.action = document.getElementById('connectHID').innerHTML=="Connect"?"connectHID":"disconnectHID";
   msg.deviceId = document.getElementById('hid-device-selector').options[document.getElementById('hid-device-selector').selectedIndex].id;
@@ -310,6 +309,7 @@ function onConnectBT(){
   });
 }
 function onMessage(request, sender, sendResponse){
+  console.log("onMessage");
   var option,i;
     if(request.action=="initHID"){
       if(request.deviceId!==''){

@@ -59,6 +59,8 @@ define(function (require) {
           return new Promise(((resolve)=>{
               function received(msg){
                   self.port.onMessage.removeListener(received);
+                  console.log(msg);
+                  console.log("connectionId: " + msg.connectionId);
                   self.connectionId = msg.connectionId;
                   var suc = self.connectionId>-1;
                   resolve(suc);

@@ -149,13 +149,14 @@ function setupBluetooth(port){
 function setupHID(port){
     var interval;
     port.onMessage.addListener(function(msg) {
+      console.log("in setupHID" + " time: " + Date.now());
+      console.log(msg);
       if(msg.method=="list"){
         chrome.hid.getDevices({vendorId:0x0416,productId:0xffff},function(devices){
             port.postMessage({method:msg.method,devices:devices});
         });
       }else if(msg.method=="connect"){
         console.log("background: connect");
-        console.log(msg);
         chrome.hid.connect(msg.deviceId, function(connectInfo) {
           console.log(connectInfo)
             if (!connectInfo) {
@@ -164,6 +165,8 @@ function setupHID(port){
               console.log(chrome.runtime.lastError); 
             }else{
               console.log("connected");
+              console.log(msg);
+              console.log(connectInfo);
               port.postMessage({method:msg.method,connectionId:connectInfo.connectionId});
               hidConnected = true;
             }
@@ -185,7 +188,7 @@ function setupHID(port){
             hidConnected = false;
         });
       }else if(msg.method=="send"){
-        if(!hidConnected){
+        if(!hidConnected || msg.connectionId == -1){
           return;
         }
         var len = msg.data.length;
@@ -197,6 +200,7 @@ function setupHID(port){
         chrome.hid.send(msg.connectionId, 0, bytes.buffer, function() {
             port.postMessage({method:msg.method,data:msg.data});
         });
+        console.log("message send");
       }else if(msg.method=="poll"){
         function poll(){
           chrome.hid.receive(msg.connectionId, function(reportId,data) {
@@ -227,7 +231,7 @@ function setupHID(port){
 }
 
 chrome.runtime.onConnectExternal.addListener(function(port){
-  console.log(port);
+  //console.log(port);
   scratchPort = port;
   scratchPort.onMessage.addListener(function(msg){
     for(var i in ports){

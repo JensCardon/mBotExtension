@@ -630,6 +630,7 @@
                     console.log("Connected");
                     mConnection = chrome.runtime.connect(makeblockAppID);
                     mConnection.onMessage.addListener(onMsgApp);
+                    console.log("devices: " + response.devices);
                 }
                 mStatus = 2;
                 setTimeout(getMakeblockAppStatus, 1000);

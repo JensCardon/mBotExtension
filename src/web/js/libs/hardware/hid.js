@@ -11,6 +11,8 @@ define(function (require) {
         self.port = chrome.runtime.connect({name: "hid"});
         var i=0;
         function updateHandle(msg){
+          console.log("in updateHandle; time: " + Date.now());
+          console.log(msg);
             switch(msg.event){
                 case DeviceEvent.DEVICE_ADDED:{
                     for(i=0;i<self.devices.length;i++){
@@ -59,8 +61,6 @@ define(function (require) {
           return new Promise(((resolve)=>{
               function received(msg){
                   self.port.onMessage.removeListener(received);
-                  console.log(msg);
-                  console.log("connectionId: " + msg.connectionId);
                   self.connectionId = msg.connectionId;
                   var suc = self.connectionId>-1;
                   resolve(suc);
@@ -79,7 +79,6 @@ define(function (require) {
                   self.connectionId = -1;
                   resolve();
               }
-              self.port.onMessage.addListener(received);
               if(self.connectionId>-1){
                 self.port.postMessage({method:"disconnect",connectionId:self.connectionId});
               }else{
@@ -96,8 +95,10 @@ define(function (require) {
                   self.port.onMessage.removeListener(received);
                   resolve();
               }
-              self.port.onMessage.addListener(received);
-              self.port.postMessage({method:"send",connectionId:self.connectionId,data:data});
+              if(self.connectionId != -1){
+                self.port.onMessage.addListener(received);
+                self.port.postMessage({method:"send",connectionId:self.connectionId,data:data});
+              }
             }));
         };
         self.on = function(event,listener){
@@ -107,7 +108,7 @@ define(function (require) {
             return self.deviceId;
         }
         
-        self.list();
+        //self.list();
         /**/
     }
     return HID;

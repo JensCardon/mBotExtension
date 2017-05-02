@@ -243,7 +243,9 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
     var resp = {};
     if(ports.length==0){
       resp.status = false;
-      resp.devices = 2;
+      chrome.hid.getDevices({vendorId:0x0416,productId:0xffff},function(devices){
+            resp.devices = devices;
+        });
       sendResponse(resp);
     }else{
       resp.status = true;

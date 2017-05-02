@@ -604,13 +604,13 @@
 			shutter:["Press","Release","Focus On","Focus Off"],
 			switchStatus:["Off","On"],
 			ircode:["A","B","C","D","E","F","↑","↓","←","→","Setting","R0","R1","R2","R3","R4","R5","R6","R7","R8","R9"],
-			connectionId:[1, 2, 3],
+			connectionId:deviceIDs,
 		}
     };
     var makeblockAppID = "ejnknffhbfkcnblikdbeeigodiihjejj"; //unique app ID for Hummingbird Scratch App ogpaopffkincgenkbbiedlfleljflfkf
     var mConnection;
     var mStatus = 0;
-    var devices = [];
+    var deviceIDs = [];
 
 	ext._getStatus = function() {
         return {status: mStatus, msg: mStatus==2?'Ready':'Not Ready'};
@@ -636,7 +636,8 @@
                     console.log("Connected");
                     mConnection = chrome.runtime.connect(makeblockAppID);
                     mConnection.onMessage.addListener(onMsgApp);
-                    devices = response.devices;
+                    deviceIDs = response.deviceIDs;
+                    console.log("deviceIDs: " + deviceIDs);
                 }
                 mStatus = 2;
                 setTimeout(getMakeblockAppStatus, 1000);

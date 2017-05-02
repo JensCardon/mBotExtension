@@ -11,6 +11,7 @@ var hidConnected = false;
 var serialConnected = false;
 var bluetoothConnected = false;
 var bluetoothSocketId = -1;
+var deviceslist = [];
 //serial
 function setupSerial(port){
     var interval;
@@ -153,6 +154,7 @@ function setupHID(port){
       console.log(msg);
       if(msg.method=="list"){
         chrome.hid.getDevices({vendorId:0x0416,productId:0xffff},function(devices){
+          deviceslist = devices;
             port.postMessage({method:msg.method,devices:devices});
         });
       }else if(msg.method=="connect"){
@@ -243,12 +245,12 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
     var resp = {};
     if(ports.length==0){
       resp.status = false;
-      chrome.hid.getDevices({vendorId:0x0416,productId:0xffff},function(devices){
-            resp.devices = devices;
-        });
       sendResponse(resp);
     }else{
       resp.status = true;
+      resp.devices = deviceslist;
+      console.log("resp: ");
+      console.log(resp);
       sendResponse(resp);
     }
 });

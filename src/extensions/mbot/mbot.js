@@ -544,6 +544,9 @@
 		_selectors["callback_"+extId] = callback;
  		addPackage(arrayBufferFromArray(data), _selectors["callback_"+extId]);
 	}
+	ext.sendmBot = function(connectionId){
+
+	}
 	var descriptor = {
         blocks: [
         	[" ", "move left %d.motorvalue right %d.motorvalue","runBot", 100, 100],
@@ -578,7 +581,8 @@
 			["R", "mBot's message received","getIR"],
 			["-"],
 			["R", "timer","getTimer", "0"],	
-			[" ", "reset timer","resetTimer", "0"]
+			[" ", "reset timer","resetTimer", "0"],
+			["h", "mBot %d.connectionId program", "sendmBot", 1]
 			],
         menus: {
 			motorPort:["M1","M2"],
@@ -600,11 +604,13 @@
 			shutter:["Press","Release","Focus On","Focus Off"],
 			switchStatus:["Off","On"],
 			ircode:["A","B","C","D","E","F","↑","↓","←","→","Setting","R0","R1","R2","R3","R4","R5","R6","R7","R8","R9"],
+			connectionId:devices,
 		}
     };
     var makeblockAppID = "ejnknffhbfkcnblikdbeeigodiihjejj"; //unique app ID for Hummingbird Scratch App ogpaopffkincgenkbbiedlfleljflfkf
     var mConnection;
     var mStatus = 0;
+    var devices = [];
 
 	ext._getStatus = function() {
         return {status: mStatus, msg: mStatus==2?'Ready':'Not Ready'};
@@ -630,7 +636,7 @@
                     console.log("Connected");
                     mConnection = chrome.runtime.connect(makeblockAppID);
                     mConnection.onMessage.addListener(onMsgApp);
-                    console.log("devices: " + response.devices);
+                    devices = response.devices;
                 }
                 mStatus = 2;
                 setTimeout(getMakeblockAppStatus, 1000);

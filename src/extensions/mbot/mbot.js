@@ -604,7 +604,7 @@
 			shutter:["Press","Release","Focus On","Focus Off"],
 			switchStatus:["Off","On"],
 			ircode:["A","B","C","D","E","F","↑","↓","←","→","Setting","R0","R1","R2","R3","R4","R5","R6","R7","R8","R9"],
-			connectionId:devices,
+			connectionId:[1, 2, 3],
 		}
     };
     var makeblockAppID = "ejnknffhbfkcnblikdbeeigodiihjejj"; //unique app ID for Hummingbird Scratch App ogpaopffkincgenkbbiedlfleljflfkf

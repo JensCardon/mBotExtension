@@ -621,6 +621,10 @@
 	    if(poller) poller = clearInterval(poller);
 	    status = false;
 	}
+    function arraysEqual(a1,a2) {
+    /* WARNING: arrays must not contain {objects} or behavior may be undefined */
+    return JSON.stringify(a1)==JSON.stringify(a2);
+}
     function getMakeblockAppStatus() {
     	console.log("in getMakeblockAppStatus");
         chrome.runtime.sendMessage(makeblockAppID, {message: "STATUS"}, function (response) {
@@ -640,7 +644,7 @@
                     mConnection.onMessage.addListener(onMsgApp);
                 }
                 mStatus = 2;
-                if(response.deviceIDs != undefined && deviceIDs != response.deviceIDs){
+                if(response.deviceIDs != undefined && !arraysEqual(response.deviceIDs, deviceIDs)){
                     deviceIDs = response.deviceIDs;
                     ScratchExtensions.unregister('Makeblock mBot');
                     ScratchExtensions.register('Makeblock mBot', descriptor, ext);

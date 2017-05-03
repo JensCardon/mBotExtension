@@ -31,16 +31,16 @@ define(function (require) {
     }
   });
 
-function connect(devices){
-  if(devices.length == 0){
-    console.log("no devices found");
-  } 
-  else{
-    for(var i=devices.length-1; i >= 0 ; i--){
-      var device_id = devices[i].value;
-      function checkConnected(hid){
-        return hid.deviceId == device_id;
-      }
+  function connect(devices){
+    if(devices.length == 0){
+      console.log("no devices found");
+    } 
+    else{
+      for(var i=devices.length-1; i >= 0 ; i--){
+        var device_id = devices[i].value;
+        function checkConnected(hid){
+          return hid.deviceId == device_id;
+        }
       //connect device if not already connected
       if(hids.find(checkConnected) === undefined){
         var hid = new HID(device_id);
@@ -48,9 +48,9 @@ function connect(devices){
         hids.push(hid);
 
         //add to HID connected
-        var connected_options = hidConnected._data.options;
+        var connected_options = hidDisconnected._data.connected_options;
         connected_options.push({ text: devices[i].text, value: device_id });
-        hidConnected._data.options = connected_options;
+        hidDisconnected._data.connected_options = connected_options;
 
         //remove options from HID disconnected
         function findID(obj){
@@ -61,7 +61,7 @@ function connect(devices){
         if(index > -1){
           disconnected_options.splice(index, 1);
           console.log("disconnected options aangepast: " + hidDisconnected._data.options);
-          console.log("connected options aangepast: " + hidConnected._data.options);
+          console.log("connected options aangepast: " + hidDisconnected._data.connected_options);
         } else {
           console.log("something horrible went wrong ==> this shouldn't happen");
         }
@@ -85,123 +85,124 @@ function removeElements(values, array){
   return array;
 }
 
-  var hidDisconnected = new Vue({
-    el: '#hid_disconnected',
-    data: {
-      selected: [],
-      options: []
+var hid_connected = Vue.component('hid_connected', {
+  name: 'hid_connected',
+
+  props: {
+    connected_selected: 
+              { type: Array,
+                default: function () { return [] }
+              },
+    connected_options: 
+              {  type: Array,
+                default: function () { return [] }
+              }
+  },
+
+  template: '#connected-template',
+
+  data: function () {
+    return this.connected_options
+  }
+});
+
+var hidDisconnected = new Vue({
+  el: '#hid_disconnected',
+  components: {hid_connected: hid_connected},
+  data: {
+    selected: [],
+    options: [],
+    connected_options: []
+  },
+  methods: {
+    connect_all: function(e) {
+      console.log("disconnected options: " + this.options);
+      console.log("connected options: " + this.connected_options);
+      connect(this.options);
+      this.options = [];
+      this.selected = [];
     },
-    methods: {
-      connect_all: function(e) {
-        console.log("disconnected options: " + this.options);
-        console.log("connected options: " + hidConnected._data.options);
-        connect(this.options);
-        this.options = [];
-        this.selected = [];
-      },
-      connect_selected: function(e){
-        console.log("disconnected options: " + this.options);
-        console.log("connected options: " + hidConnected._data.options);
-        this.options = removeElements(this.selected, this.options);
-        connect(this.selected);
-        this.selected = [];
-      },
-      disconnect_all: function(e){
-        console.log("disconnected options: " + this.options);
-        console.log("connected options: " + hidConnected._data.options);
-        var connected_options = hidConnected._data.options;
-        if(connected_options.length != 0){
-          for(var i=0; i<connected_options.length; i++){
-            this.options.push(connected_options[i]);
-            console.log("Device with id:" + connected_options[i].value + " disconnected");
-          }
-          hidConnected._data.options = []; 
-          hids = [];
-        } else {
-          console.log("no devices found");
+    connect_selected: function(e){
+      console.log("disconnected options: " + this.options);
+      console.log("connected options: " + this.connected_options);
+      this.options = removeElements(this.selected, this.options);
+      connect(this.selected);
+      this.selected = [];
+    },
+    disconnect_all: function(e){
+      console.log("disconnected options: " + this.options);
+      console.log("connected options: " + this.connected_options);
+      var connected_options = this.connected_options;
+      if(connected_options.length != 0){
+        for(var i=0; i<connected_options.length; i++){
+          this.options.push(connected_options[i]);
+          console.log("Device with id:" + connected_options[i].value + " disconnected");
         }
-      },
-      disconnect_selected: function(e){
-        console.log("hidDisconnected fault");
+        this.connected_options = []; 
+        hids = [];
+      } else {
+        console.log("no devices found");
+      }
+    },
+    disconnect_selected: function(e){
+      console.log("hidDisconnected fault");
+    }
+  }
+});
+
+var serialSelector = new Vue({
+  el: '#serial-devices',
+  data: {
+    selected: '',
+    options: []
+  },
+  methods: {
+    connect: function (e) {
+      if(serial.connectionId>-1){
+        serial.disconnect().then(function(){
+          e.target.innerHTML = "Connect";
+        })
+      }else{
+        serial.connect(this.selected).then(function(suc){
+          console.log("serial connected:",suc);
+          e.target.innerHTML = (suc?"Disconnect":"Connect");
+        });
       }
     }
-  });
+  }
+});
 
-var hidConnected = new Vue({
-    el: '#hid_connected',
-    data: {
-      selected: [],
-      options: []
-    },
-    methods: {
-      disconnect_all: function(e){
-        console.log("in disconnect_all");
-      },
-      disconnect_selected: function(e){
-        console.log("in disconnect_selected");
-      },
-      connect_all: function(e) {
-        console.log("hidConnected fault");
-      },
-      connect_selected: function(e){
-        console.log("hidConnected fault");
+var bluetoothSelector = new Vue({
+  el: '#bluetooth-devices',
+  data: {
+    selected: '',
+    options: []
+  },
+  methods: {
+    connect: function (e) {
+      if(bluetooth.connectionId == []){
+        bluetooth.disconnect().then(function(){
+          e.target.innerHTML = "Connect";
+        })
+      }else{
+        bluetooth.connect(this.selected).then(function(suc){
+          console.log("bluetooth connected:",suc);
+          e.target.innerHTML = (suc?"Disconnect":"Connect");
+        });
       }
-    }
-  });
-
-  var serialSelector = new Vue({
-    el: '#serial-devices',
-    data: {
-      selected: '',
-      options: []
     },
-    methods: {
-        connect: function (e) {
-          if(serial.connectionId>-1){
-            serial.disconnect().then(function(){
-              e.target.innerHTML = "Connect";
-            })
-          }else{
-            serial.connect(this.selected).then(function(suc){
-              console.log("serial connected:",suc);
-              e.target.innerHTML = (suc?"Disconnect":"Connect");
-            });
-          }
-        }
+    discover:function(e){
+      bluetooth.discover();
     }
-  });
-
-  var bluetoothSelector = new Vue({
-    el: '#bluetooth-devices',
-    data: {
-      selected: '',
-      options: []
-    },
-    methods: {
-        connect: function (e) {
-          if(bluetooth.connectionId == []){
-            bluetooth.disconnect().then(function(){
-              e.target.innerHTML = "Connect";
-            })
-          }else{
-            bluetooth.connect(this.selected).then(function(suc){
-              console.log("bluetooth connected:",suc);
-              e.target.innerHTML = (suc?"Disconnect":"Connect");
-            });
-          }
-        },
-        discover:function(e){
-          bluetooth.discover();
-        }
-    }
-  });
-  var scratchPanel = new Vue({
-    el:"#scratch-x-panel",
-    methods:{
-      openProject:function(){
-        window.open('http://scratchx.org/?url=https://jenscardon.github.io/mBotExtension/src/extensions/mbot/mbot.js&id='+chrome.runtime.id+'#scratch');
+  }
+});
+var scratchPanel = new Vue({
+  el:"#scratch-x-panel",
+  methods:{
+    openProject:function(){
+      window.open('http://scratchx.org/?url=https://jenscardon.github.io/mBotExtension/src/extensions/mbot/mbot.js&id='+chrome.runtime.id+'#scratch');
         //window.open('http://scratchx.org/?url=http://mbotx.github.io/scratchx-mbot/makeblock.js&id='+chrome.runtime.id+'#scratch');
-      
+
       },
       refresh:function(){
         updateSerial();
@@ -210,58 +211,58 @@ var hidConnected = new Vue({
       }
     }
   });
-  function updateSerial(){
-    serial.list().then(function(devices){
-      updateSerialList(devices);
-    });
-  }
-  function updateHID(){
-    hid.list().then(function(devices){
-      updateHIDList(devices);
-    });
-  }
-  function updateBluetooth(){
-    bluetooth.list().then(function(devices){
-      updateBluetoothList(devices);
-    });
-  }
-  updateSerial();
-  updateHID();
-  updateBluetooth();
-  hid.on(DeviceEvent.DEVICES_UPDATE,function(devices){
+function updateSerial(){
+  serial.list().then(function(devices){
+    updateSerialList(devices);
+  });
+}
+function updateHID(){
+  hid.list().then(function(devices){
     updateHIDList(devices);
   });
-  bluetooth.on(DeviceEvent.DEVICES_UPDATE,function(devices){
+}
+function updateBluetooth(){
+  bluetooth.list().then(function(devices){
     updateBluetoothList(devices);
   });
-  function updateHIDList(devices){
-    var options = [];
-    for(var i=0;i<devices.length;i++){
-      options.push({ text: devices[i].productName + " " + devices[i].deviceId, value: devices[i].deviceId });
-    }
-    hidDisconnected._data.options = options;
+}
+updateSerial();
+updateHID();
+updateBluetooth();
+hid.on(DeviceEvent.DEVICES_UPDATE,function(devices){
+  updateHIDList(devices);
+});
+bluetooth.on(DeviceEvent.DEVICES_UPDATE,function(devices){
+  updateBluetoothList(devices);
+});
+function updateHIDList(devices){
+  var options = [];
+  for(var i=0;i<devices.length;i++){
+    options.push({ text: devices[i].productName + " " +devices[i].deviceId, value: devices[i].deviceId });
   }
-  function updateSerialList(devices){
-    var options = [];
-    for(var i=0;i<devices.length;i++){
-      if(devices[i].path.indexOf("cu")>-1)continue;
-      options.push({ text: devices[i].path, value: devices[i].path });
-    }
-    serialSelector._data.options = options;
-    if(options.length>0){
-      serialSelector._data.selected = options[0].value;
-    }
+  hidDisconnected._data.options = options;
+}
+function updateSerialList(devices){
+  var options = [];
+  for(var i=0;i<devices.length;i++){
+    if(devices[i].path.indexOf("cu")>-1)continue;
+    options.push({ text: devices[i].path, value: devices[i].path });
   }
-  function updateBluetoothList(devices){
-    var options = [];
-    for(var i=0;i<devices.length;i++){
-      options.push({ text: devices[i].name+"("+devices[i].address+")", value: devices[i].address });
-    }
-    bluetoothSelector._data.options = options;
-    if(options.length>0){
-      bluetoothSelector._data.selected = options[0].value;
-    }
+  serialSelector._data.options = options;
+  if(options.length>0){
+    serialSelector._data.selected = options[0].value;
   }
+}
+function updateBluetoothList(devices){
+  var options = [];
+  for(var i=0;i<devices.length;i++){
+    options.push({ text: devices[i].name+"("+devices[i].address+")", value: devices[i].address });
+  }
+  bluetoothSelector._data.options = options;
+  if(options.length>0){
+    bluetoothSelector._data.selected = options[0].value;
+  }
+}
 });
 //clgdmbbhmdlbcgdffocenbbeclodbndh
 //old code
@@ -311,54 +312,54 @@ function onConnectBT(){
 function onMessage(request, sender, sendResponse){
   console.log("onMessage");
   var option,i;
-    if(request.action=="initHID"){
-      if(request.deviceId!==''){
-        console.log(request.devices);
-        option = document.createElement('option');
-        option.text = request.productName+" #"+request.deviceId;
-        option.id = request.deviceId;
-        document.getElementById('hid-device-selector').options.length = 0;
-        document.getElementById('hid-device-selector').options.add(option);
-      }
-    }else if(request.action=="addHID"){
-      if(request.deviceId!==''){
-        option = document.createElement('option');
-        option.text = request.productName+" #"+request.deviceId;
-        option.id = request.deviceId;
-        document.getElementById('hid-device-selector').options.add(option);
-      }
-    }else if(request.action=="initBT"){
-      document.getElementById('bt-device-selector').options.length = 0;
+  if(request.action=="initHID"){
+    if(request.deviceId!==''){
       console.log(request.devices);
-      if(request.devices.length>0){
-        for(i=0;i<request.devices.length;i++){
-          option = document.createElement('option');
-          option.text = ""+request.devices[i].name+" ( "+request.devices[i].address+" )";
-          option.id = request.devices[i].address;
-          document.getElementById('bt-device-selector').options.add(option);
-        }
-      }
-    }else if(request.action=="initSerial"){
-      document.getElementById('serial-device-selector').options.length = 0;
-      if(request.devices.length>0){
-        for(i=0;i<request.devices.length;i++){
-          option = document.createElement('option');
-          option.text = ""+request.devices[i].path+(request.devices[i].displayName?" "+request.devices[i].displayName:"");
-          option.id = request.devices[i].path;
-          document.getElementById('serial-device-selector').options.add(option);
-        }
-      }
-    }else if(request.action=="connectHID"){
-      document.getElementById('connectHID').innerHTML = request.status?'Disconnect':'Connect';
-    }else if(request.action=="connectBT"){
-      document.getElementById('connectBT').innerHTML = request.status?'Disconnect':'Connect';
-    }else if(request.action=="connectSerial"){
-      console.log(request.action,request);
-      document.getElementById('connectSerial').innerHTML = request.status?'Disconnect':'Connect';
+      option = document.createElement('option');
+      option.text = request.productName+" #"+request.deviceId;
+      option.id = request.deviceId;
+      document.getElementById('hid-device-selector').options.length = 0;
+      document.getElementById('hid-device-selector').options.add(option);
     }
-    var resp = {};
-    resp.request = request;
-    sendResponse(resp);
+  }else if(request.action=="addHID"){
+    if(request.deviceId!==''){
+      option = document.createElement('option');
+      option.text = request.productName+" #"+request.deviceId;
+      option.id = request.deviceId;
+      document.getElementById('hid-device-selector').options.add(option);
+    }
+  }else if(request.action=="initBT"){
+    document.getElementById('bt-device-selector').options.length = 0;
+    console.log(request.devices);
+    if(request.devices.length>0){
+      for(i=0;i<request.devices.length;i++){
+        option = document.createElement('option');
+        option.text = ""+request.devices[i].name+" ( "+request.devices[i].address+" )";
+        option.id = request.devices[i].address;
+        document.getElementById('bt-device-selector').options.add(option);
+      }
+    }
+  }else if(request.action=="initSerial"){
+    document.getElementById('serial-device-selector').options.length = 0;
+    if(request.devices.length>0){
+      for(i=0;i<request.devices.length;i++){
+        option = document.createElement('option');
+        option.text = ""+request.devices[i].path+(request.devices[i].displayName?" "+request.devices[i].displayName:"");
+        option.id = request.devices[i].path;
+        document.getElementById('serial-device-selector').options.add(option);
+      }
+    }
+  }else if(request.action=="connectHID"){
+    document.getElementById('connectHID').innerHTML = request.status?'Disconnect':'Connect';
+  }else if(request.action=="connectBT"){
+    document.getElementById('connectBT').innerHTML = request.status?'Disconnect':'Connect';
+  }else if(request.action=="connectSerial"){
+    console.log(request.action,request);
+    document.getElementById('connectSerial').innerHTML = request.status?'Disconnect':'Connect';
+  }
+  var resp = {};
+  resp.request = request;
+  sendResponse(resp);
 }
 window.onload = function(){
   console.log("main: in onload");

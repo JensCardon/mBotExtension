@@ -11,7 +11,7 @@
         Port2: 2,
         Port3: 3,
         Port4: 4,
-		M1:9,
+        M1:9,
 		M2:10,
 		'on board':7,
 		'light sensor on board':8
@@ -604,7 +604,7 @@
 			shutter:["Press","Release","Focus On","Focus Off"],
 			switchStatus:["Off","On"],
 			ircode:["A","B","C","D","E","F","↑","↓","←","→","Setting","R0","R1","R2","R3","R4","R5","R6","R7","R8","R9"],
-			connectionId:deviceIDs,
+			connectionId:["1", "2", "3"],
 		}
     };
     var makeblockAppID = "ejnknffhbfkcnblikdbeeigodiihjejj"; //unique app ID for Hummingbird Scratch App ogpaopffkincgenkbbiedlfleljflfkf

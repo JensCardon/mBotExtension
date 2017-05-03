@@ -5,7 +5,7 @@
   <link rel="stylesheet" href="style/style.css">
   <link rel="stylesheet" href="style/buttons.css">
   <script data-main="./js/config" src="./js/libs/require.js"></script>
-    
+
 </head>
 <body>
   <div id="app"><img src="./assets/logo.png"> 
@@ -24,53 +24,61 @@
     <button id="button-right" class="button button-primary button-box" v-on:click="connect">Connect</button>
   </div>
 
-<div id="HID">
-  <div class="HID" style="width:100%;margin-top:20px;position:relative;min-height: 100px;">
-    <div style="margin-top:22px;">
-      <div style="float:left;padding-left:6%;">HID disconnected</div>
-      <div style="float:right;padding-right:11%;">HID connected</div>
+  <div id="HID">
+    <div class="HID" style="width:100%;margin-top:20px;position:relative;min-height: 100px;">
+      <div style="margin-top:22px;">
+        <div style="float:left;padding-left:6%;">HID disconnected</div>
+        <div style="float:right;padding-right:11%;">HID connected</div>
+      </div>
+      <div id="hid_disconnected">
+        <select v-model="selected" multiple style="width:40%;min-height:75px;">
+          <option v-for="option in options" v-bind:value="option">
+            {{ option.text }}
+          </option>
+        </select>
+        <div style="display:inline-block;margin:0px 13px;" class="buttons">
+          <button class="v-button" id="connect_all" v-on:click="connect_all">
+            <span class="v-button-wrap">
+              <span class="v-button-caption">&gt;&gt;</span>
+            </span>
+          </button>
+          <div><span></span></div>
+          <button class="v-button" id="disconnect_all" v-on:click="disconnect_all">
+            <span class="v-button-wrap">
+              <span class="v-button-caption">&lt;&lt;</span>
+            </span>
+          </button>
+          <div><span></span></div>
+          <button class="v-button" id="connect_selected" style="padding: 0px 9px;" v-on:click="connect_selected">
+            <span class="v-button-wrap">
+              <span class="v-button-caption">&gt;</span>
+            </span>
+          </button>
+          <div><span></span></div>
+          <button class="v-button" id="disconnect_selected" style="padding: 0px 9px;" v-on:click="disconnect_selected">
+            <span class="v-button-wrap">
+              <span class="v-button-caption">&lt;</span>
+            </span>
+          </button>
+        </div>
+        <!-- <hid_connected v-bind:options="options" v-bind:selected="selected"></hid_connected> -->
+        <template id="connected-template">
+          <select multiple style="width: 40%;min-height: 75px;float:right;">
+            <option v-for="option in connected_options" v-bind:value="option">
+              {{ option.text }}
+            </option>
+          </select>
+        </template>
+        <!-- <span id="hid_connected">
+          <select multiple style="width: 40%;min-height: 75px;float:right;">
+            <option v-for="option in options" v-bind:value="option">
+              {{ option.text }}
+            </option>
+          </select>
+        </span> -->
+      </div>
     </div>
-    <div id="hid_disconnected">
-    <select v-model="selected" multiple style="width:40%;min-height:75px;">
-      <option v-for="option in options" v-bind:value="option">
-        {{ option.text }}
-      </option>
-    </select>
-    <div style="display:inline-block;margin:0px 13px;" class="buttons">
-      <button class="v-button" id="connect_all" v-on:click="connect_all">
-        <span class="v-button-wrap">
-          <span class="v-button-caption">&gt;&gt;</span>
-        </span>
-      </button>
-      <div><span></span></div>
-      <button class="v-button" id="disconnect_all" v-on:click="disconnect_all">
-        <span class="v-button-wrap">
-          <span class="v-button-caption">&lt;&lt;</span>
-        </span>
-      </button>
-      <div><span></span></div>
-      <button class="v-button" id="connect_selected" style="padding: 0px 9px;" v-on:click="connect_selected">
-        <span class="v-button-wrap">
-          <span class="v-button-caption">&gt;</span>
-        </span>
-      </button>
-      <div><span></span></div>
-      <button class="v-button" id="disconnect_selected" style="padding: 0px 9px;" v-on:click="disconnect_selected">
-        <span class="v-button-wrap">
-          <span class="v-button-caption">&lt;</span>
-        </span>
-      </button>
-    </div>
-    <span id="hid_connected">
-    <select multiple style="width: 40%;min-height: 75px;float:right;"></select>
-    <option v-for="option in options" v-bind:value="option">
-        {{ option.text }}
-      </option>
-    </select>
-    </span>
   </div>
-  </div>
-</div>
 
   <div id="serial-devices">
     <span style="width:220px;display:block;">Serial Port</span>
@@ -85,4 +93,4 @@
     <button v-on:click="refresh" id="button-left"  class="button button-action button-box" >Refresh</button>
     <button v-on:click="openProject"  id="button-width" class="button button-highlight button-box">Open Scratch X</button>
   </div>
-</html>
+  </html>

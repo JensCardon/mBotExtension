@@ -585,7 +585,7 @@
 			["-"],
 			["R", "timer","getTimer", "0"],	
 			[" ", "reset timer","resetTimer", "0"],
-			["h", "mBot %n.connectionId program", "sendmBot", 3]
+			["h", "mBot %d.connectionId() program", "sendmBot", 3]
 			],
         menus: {
 			motorPort:["M1","M2"],

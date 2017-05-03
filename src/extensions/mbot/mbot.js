@@ -607,7 +607,7 @@
 			shutter:["Press","Release","Focus On","Focus Off"],
 			switchStatus:["Off","On"],
 			ircode:["A","B","C","D","E","F","↑","↓","←","→","Setting","R0","R1","R2","R3","R4","R5","R6","R7","R8","R9"],
-			connectionId:deviceIDs,
+			connectionId:[1, 2, 3],
 		}
     };
     var makeblockAppID = "ejnknffhbfkcnblikdbeeigodiihjejj"; //unique app ID for Hummingbird Scratch App ogpaopffkincgenkbbiedlfleljflfkf
@@ -642,7 +642,8 @@
                 mStatus = 2;
                 if(response.deviceIDs != undefined){
                     deviceIDs = response.deviceIDs;
-                    console.log("deviceIDs: " + deviceIDs);
+                    console.log("deviceIDs: ")
+                    console.log(deviceIDs);
                 }
                 setTimeout(getMakeblockAppStatus, 1000);
             }

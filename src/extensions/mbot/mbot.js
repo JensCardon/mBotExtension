@@ -585,7 +585,9 @@
 			["-"],
 			["R", "timer","getTimer", "0"],	
 			[" ", "reset timer","resetTimer", "0"],
-			["h", "mBot %d.connectionId program", "sendmBot", deviceIDs[0]]
+			["h", "mBot %d.connectionId program", "sendmBot", function() {
+                return deviceIDs[0]
+            }]
 			],
         menus: {
 			motorPort:["M1","M2"],
@@ -607,7 +609,9 @@
 			shutter:["Press","Release","Focus On","Focus Off"],
 			switchStatus:["Off","On"],
 			ircode:["A","B","C","D","E","F","↑","↓","←","→","Setting","R0","R1","R2","R3","R4","R5","R6","R7","R8","R9"],
-			connectionId:deviceIDs
+			connectionId:function() {
+                return deviceIDs
+            }
 		}
     };
     var makeblockAppID = "ejnknffhbfkcnblikdbeeigodiihjejj"; //unique app ID for Hummingbird Scratch App ogpaopffkincgenkbbiedlfleljflfkf
@@ -650,7 +654,7 @@
                     ScratchExtensions.register('Makeblock mBot', descriptor, ext);
                     console.log("deviceIDs updated: ")
                     console.log(deviceIDs);
-                    console.log(descriptor.menus.connectionId);
+                    console.log(descriptor.menus.connectionId());
                 }
                 setTimeout(getMakeblockAppStatus, 1000);
             }

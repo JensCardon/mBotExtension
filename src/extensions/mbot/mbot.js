@@ -649,7 +649,7 @@
                 if(deviceIDs.length == 0){
                     deviceIDs = response.deviceIDs;
                     ScratchExtensions.unregister('Makeblock mBot');
-                    ScratchExtensions.register('Makeblock mBot', descriptor, ext);
+                    ScratchExtensions.register('Makeblock mBot', descriptor, ext, {type: 'hid', vendor:0x0416,product:0xffff});
                     console.log("deviceIDs updated: ")
                     console.log(deviceIDs);
                     console.log(descriptor);
@@ -665,5 +665,5 @@
         }
     };
     getMakeblockAppStatus();
-	ScratchExtensions.register('Makeblock mBot', descriptor, ext);
+	ScratchExtensions.register('Makeblock mBot', descriptor, ext, {type: 'hid', vendor:0x0416,product:0xffff});
 })({});

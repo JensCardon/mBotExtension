@@ -642,6 +642,8 @@
                 mStatus = 2;
                 if(response.deviceIDs != undefined){
                     deviceIDs = response.deviceIDs;
+                    ScratchExtensions.unregister('Makeblock mBot');
+                    ScratchExtensions.register('Makeblock mBot', descriptor, ext);
                     console.log("deviceIDs: ")
                     console.log(deviceIDs);
                 }

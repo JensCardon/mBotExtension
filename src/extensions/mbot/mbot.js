@@ -644,7 +644,7 @@
                     mConnection.onMessage.addListener(onMsgApp);
                 }
                 mStatus = 2;
-                if(deviceIDs == null){
+                if(deviceIDs.length == 0){
                     deviceIDs = response.deviceIDs;
                     ScratchExtensions.unregister('Makeblock mBot');
                     ScratchExtensions.register('Makeblock mBot', descriptor, ext);

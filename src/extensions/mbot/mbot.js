@@ -549,7 +549,7 @@
 	}
 
     var deviceIDs = [];
-    
+
 	var descriptor = {
         blocks: [
         	[" ", "move left %d.motorvalue right %d.motorvalue","runBot", 100, 100],
@@ -638,10 +638,12 @@
                     console.log("Connected");
                     mConnection = chrome.runtime.connect(makeblockAppID);
                     mConnection.onMessage.addListener(onMsgApp);
+                }
+                mStatus = 2;
+                if(response.deviceIDs != undefined){
                     deviceIDs = response.deviceIDs;
                     console.log("deviceIDs: " + deviceIDs);
                 }
-                mStatus = 2;
                 setTimeout(getMakeblockAppStatus, 1000);
             }
         });

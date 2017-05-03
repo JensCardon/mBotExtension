@@ -154,12 +154,7 @@ function setupHID(port){
       console.log(msg);
       if(msg.method=="list"){
         chrome.hid.getDevices({vendorId:0x0416,productId:0xffff},function(devices){
-          if(deviceslist.length == 0){
-            for(var i = 0; i<devices.length; i++){
-            deviceslist.push(devices.deviceId);
-          }
-          }
-            port.postMessage({method:msg.method,devices:devices});
+          port.postMessage({method:msg.method,devices:devices});
         });
       }else if(msg.method=="connect"){
         console.log("background: connect");
@@ -251,6 +246,15 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
       resp.status = false;
       sendResponse(resp);
     }else{
+      chrome.hid.getDevices({vendorId:0x0416,productId:0xffff},function(devices){
+          if(devices.length != 0 && deviceslist.length == 0){
+            console.log("devices: ");
+            console.log(devices);
+            for(var i = 0; i<devices.length; i++){
+            deviceslist.push(devices[i].deviceId);
+          }
+          }
+        });
       resp.status = true;
       resp.deviceIDs = deviceslist;
       console.log("deviceIDs: " + resp.deviceIDs);

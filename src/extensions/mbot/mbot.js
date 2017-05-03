@@ -650,6 +650,7 @@
                     ScratchExtensions.register('Makeblock mBot', descriptor, ext);
                     console.log("deviceIDs updated: ")
                     console.log(deviceIDs);
+                    console.log(descriptor.menus.connectionId);
                 }
                 setTimeout(getMakeblockAppStatus, 1000);
             }

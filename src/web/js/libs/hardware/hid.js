@@ -42,9 +42,11 @@ define(function (require) {
                 break;
                 case DeviceEvent.COMMAND_RECEIVED:{
                   console.log("COMMAND_RECEIVED");
+                  if(msg.data !== undefined){
                     var data = msg.data;
                     data.splice(0,1);
                     self.send(data);
+                  }
                 }
                 break;
             }

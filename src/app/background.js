@@ -234,7 +234,7 @@ function setupHID(port){
 }
 
 chrome.runtime.onConnectExternal.addListener(function(port){
-  console.log(port);
+  console.log("onConnectExternal");
   scratchPort = port;
   scratchPort.onMessage.addListener(function(msg){
     for(var i in ports){
@@ -263,7 +263,7 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
     }
 });
 chrome.runtime.onConnect.addListener(function(port){
-  //console.log(port);
+  console.log(port);
   ports.push(port);
   if(port.name=="hid"){
     setupHID(port);

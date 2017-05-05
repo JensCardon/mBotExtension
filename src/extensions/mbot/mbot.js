@@ -697,8 +697,9 @@ else {// successfully connected
         mConnection.onMessage.addListener(onMsgApp);
     }
     mStatus = 2;
-    if(deviceIDs != response.deviceIDs.slice()){
-        deviceIDs = response.deviceIDs;
+    var newdeviceIDs = response.deviceIDs;
+    if(JSON.stringify(deviceIDs) != JSON.stringify(newdeviceIDs)){
+        deviceIDs = newdeviceIDs;
         ScratchExtensions.unregister('Makeblock mBot');
         ScratchExtensions.register('Makeblock mBot', myRegister(), ext);
         console.log("deviceIDs updated: ")

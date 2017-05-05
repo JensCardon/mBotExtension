@@ -623,8 +623,8 @@
     };
     function getMakeblockAppStatus() {
         console.log("in getMakeblockAppStatus");
-        var newdeviceIDs = [];
         chrome.runtime.sendMessage(makeblockAppID, {message: "STATUS"}, function (response) {
+            console.log(response);
             if (response === undefined) {
                 console.log("Chrome app not found");
                 mStatus = 0;

@@ -11,7 +11,7 @@ var hidConnected = false;
 var serialConnected = false;
 var bluetoothConnected = false;
 var bluetoothSocketId = -1;
-var deviceslist = [];
+var deviceIDslist = [];
 //serial
 function setupSerial(port){
     var interval;
@@ -150,24 +150,20 @@ function setupBluetooth(port){
 function setupHID(port){
     var interval;
     port.onMessage.addListener(function(msg) {
-      console.log("in setupHID" + " time: " + Date.now());
+      console.log("-----------setupHID----------");
       console.log(msg);
       if(msg.method=="list"){
         chrome.hid.getDevices({vendorId:0x0416,productId:0xffff},function(devices){
           port.postMessage({method:msg.method,devices:devices});
         });
       }else if(msg.method=="connect"){
-        console.log("background: connect");
         chrome.hid.connect(msg.deviceId, function(connectInfo) {
-          console.log(connectInfo)
             if (!connectInfo) {
               console.log("not connected");
               port.postMessage({method:msg.method,connectionId:-1});
               console.log(chrome.runtime.lastError); 
             }else{
-              console.log("connected");
-              console.log(msg);
-              console.log(connectInfo);
+              console.log("connected: Device_id: " + msg.deviceId + " ; Connection_id: " + connectInfo.connectionId);
               port.postMessage({method:msg.method,connectionId:connectInfo.connectionId});
               hidConnected = true;
             }
@@ -189,6 +185,9 @@ function setupHID(port){
             hidConnected = false;
         });
       }else if(msg.method=="send"){
+        console.log("-----bg: SEND------");
+        console.log("msg");
+        console.log(msg);
         if(!hidConnected || msg.connectionId == -1){
           return;
         }
@@ -232,7 +231,6 @@ function setupHID(port){
 }
 
 chrome.runtime.onConnectExternal.addListener(function(port){
-  //console.log(port);
   scratchPort = port;
   scratchPort.onMessage.addListener(function(msg){
     for(var i in ports){
@@ -241,29 +239,27 @@ chrome.runtime.onConnectExternal.addListener(function(port){
   });
 });
 chrome.runtime.onMessageExternal.addListener(function(request, sender, sendResponse) {
+  console.log("onMessageExternal");
     var resp = {};
     if(ports.length==0){
       resp.status = false;
       sendResponse(resp);
     }else{
       chrome.hid.getDevices({vendorId:0x0416,productId:0xffff},function(devices){
-          if(devices.length != 0 && deviceslist.length == 0){
-            console.log("devices: ");
-            console.log(devices);
+          if(devices.length != 0){
+            deviceIDslist = [];
             for(var i = 0; i<devices.length; i++){
-            deviceslist.push(devices[i].deviceId);
+            deviceIDslist.push(devices[i].deviceId);
           }
           }
         });
       resp.status = true;
-      resp.deviceIDs = deviceslist;
-      console.log("deviceIDs: ")
-      console.log(resp.deviceIDs);
+      resp.deviceIDs = deviceIDslist;
       sendResponse(resp);
     }
 });
 chrome.runtime.onConnect.addListener(function(port){
-  console.log(port);
+  //console.log(port);
   ports.push(port);
   if(port.name=="hid"){
     setupHID(port);

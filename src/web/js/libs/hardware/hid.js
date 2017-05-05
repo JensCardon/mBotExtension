@@ -62,7 +62,6 @@ define(function (require) {
             }));
         };
         self.connect = function(deviceId){
-          console.log("connect");
           return new Promise(((resolve)=>{
               function received(msg){
                   self.port.onMessage.removeListener(received);

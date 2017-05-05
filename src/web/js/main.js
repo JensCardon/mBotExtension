@@ -230,29 +230,28 @@ function updateSerial(){
   });
 }
 function updateHID(){
-  console.log("-----------updateHID------------");
+  //console.log("-----------updateHID------------");
   hid.list().then(function(devices){
   //if device removed
-  console.log("devices.length = " + devices.length);
-  console.log("prev_devices.length = " + prev_devices.length);
   if(devices.length<prev_devices.length){
     //get the removed devices
     var removed = removeElements(devices, prev_devices);
-    console.log("removed");
-    console.log(removed);
-
     //remove them from connected selected
-    console.log("connected_options before");
-    console.log(hidDisconnected._data.connected_options);
-    hidDisconnected._data.connected_options = removeElements(removed, hidDisconnected._data.connected_options);
-    console.log("connected_options after");
-    console.log(hidDisconnected._data.connected_options);
+    // console.log("devices:");
+    // console.log(devices);
+    // console.log("removed:");
+    // console.log(removed);
+    // console.log("connected_options before");
+    // console.log(hidDisconnected._data.connected_options);
+    // hidDisconnected._data.connected_options = removeElements(removed, hidDisconnected._data.connected_options);
+    // console.log("connected_options after");
+    // console.log(hidDisconnected._data.connected_options);
   } 
-  console.log("after");
   updateHIDList(devices);
   prev_devices = devices.slice();
-  console.log("setted to => prev_devices.length = " + prev_devices.length);
-  console.log("-----------updateHID-end---------");
+  //console.log("prev_devices:");
+  //console.log(prev_devices);
+  //console.log("-----------updateHID-end---------");
 });
 }
 function updateBluetooth(){
@@ -272,7 +271,6 @@ bluetooth.on(DeviceEvent.DEVICES_UPDATE,function(devices){
   updateBluetoothList(devices);
 });
 function updateHIDList(devices){
-  console.log("updateHIDList");
   var options = [];
   for(var i=0;i<devices.length;i++){
     options.push({ text: devices[i].productName + " " + devices[i].deviceId, value: devices[i].deviceId });
@@ -320,15 +318,6 @@ function onRefreshHardware(){
     });
   });
   
-}
-function onConnectHID(){
-  console.log("in onConnectHID");
-  var msg = {};
-  msg.action = document.getElementById('connectHID').innerHTML=="Connect"?"connectHID":"disconnectHID";
-  msg.deviceId = document.getElementById('hid-device-selector').options[document.getElementById('hid-device-selector').selectedIndex].id;
-  chrome.runtime.sendMessage(msg,function(response){
-    console.log("hid:",response);
-  });
 }
 function onConnectSerial(){
   var msg = {};
@@ -402,7 +391,6 @@ function onMessage(request, sender, sendResponse){
 window.onload = function(){
   console.log("main: in onload");
   document.getElementById('openscratchx').addEventListener('click', onOpenScratchX);
-  document.getElementById('connectHID').addEventListener('click', onConnectHID);
   document.getElementById('connectSerial').addEventListener('click', onConnectSerial);
   document.getElementById('connectBT').addEventListener('click', onConnectBT);
   document.getElementById('refresh').addEventListener('click', onRefreshHardware);

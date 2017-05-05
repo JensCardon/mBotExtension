@@ -697,11 +697,13 @@ else {// successfully connected
         mConnection.onMessage.addListener(onMsgApp);
     }
     mStatus = 2;
-    deviceIDs = response.deviceIDs;
-    ScratchExtensions.unregister('Makeblock mBot');
-    ScratchExtensions.register('Makeblock mBot', myRegister(), ext);
-    console.log("deviceIDs updated: ")
-    console.log(deviceIDs);
+    if(deviceIDs != response.deviceIDs.slice()){
+        deviceIDs = response.deviceIDs;
+        ScratchExtensions.unregister('Makeblock mBot');
+        ScratchExtensions.register('Makeblock mBot', myRegister(), ext);
+        console.log("deviceIDs updated: ")
+        console.log(deviceIDs);
+    }
 }
 setTimeout(getMakeblockAppStatus, 1000);
 });

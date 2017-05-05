@@ -629,29 +629,6 @@ var blocks = [
 ["h", "mBot %m.connectionId program", "sendmBot"]
 ];
 
-var menus = {
-    motorPort:["M1","M2"],
-    slot:["Slot1","Slot2"],
-    index:["all",1,2],
-    Axis:["X-Axis","Y-Axis"],
-    port:["Port1","Port2","Port3","Port4"],
-    aport:["Port3","Port4"],
-    lport:["led on board","Port1","Port2","Port3","Port4"],
-    laport:["light sensor on board","Port3","Port4"],
-    direction:["run forward","run backward","turn right","turn left"],
-    points:[":"," "],
-    note:["C2","D2","E2","F2","G2","A2","B2","C3","D3","E3","F3","G3","A3","B3","C4","D4","E4","F4","G4","A4","B4","C5","D5","E5","F5","G5","A5","B5","C6","D6","E6","F6","G6","A6","B6","C7","D7","E7","F7","G7","A7","B7","C8","D8"],
-    beats:["Half","Quater","Eighth","Whole","Double","Zero"],
-    servovalue:[0,45,90,135,180],
-    motorvalue:[-255,-100,-50,0,50,100,255],
-    value:[0,20,60,150,255],
-    buttonStatus:["pressed","released"],
-    shutter:["Press","Release","Focus On","Focus Off"],
-    switchStatus:["Off","On"],
-    ircode:["A","B","C","D","E","F","↑","↓","←","→","Setting","R0","R1","R2","R3","R4","R5","R6","R7","R8","R9"],
-    connectionId:deviceIDs
-};
-
 // var descriptor = {
 //     blocks: blocks,
 //     menus: menus
@@ -660,7 +637,28 @@ var menus = {
 function myRegister() {
     var descriptor = {
         blocks: blocks,
-        menus: menus
+        menus: {
+            motorPort:["M1","M2"],
+            slot:["Slot1","Slot2"],
+            index:["all",1,2],
+            Axis:["X-Axis","Y-Axis"],
+            port:["Port1","Port2","Port3","Port4"],
+            aport:["Port3","Port4"],
+            lport:["led on board","Port1","Port2","Port3","Port4"],
+            laport:["light sensor on board","Port3","Port4"],
+            direction:["run forward","run backward","turn right","turn left"],
+            points:[":"," "],
+            note:["C2","D2","E2","F2","G2","A2","B2","C3","D3","E3","F3","G3","A3","B3","C4","D4","E4","F4","G4","A4","B4","C5","D5","E5","F5","G5","A5","B5","C6","D6","E6","F6","G6","A6","B6","C7","D7","E7","F7","G7","A7","B7","C8","D8"],
+            beats:["Half","Quater","Eighth","Whole","Double","Zero"],
+            servovalue:[0,45,90,135,180],
+            motorvalue:[-255,-100,-50,0,50,100,255],
+            value:[0,20,60,150,255],
+            buttonStatus:["pressed","released"],
+            shutter:["Press","Release","Focus On","Focus Off"],
+            switchStatus:["Off","On"],
+            ircode:["A","B","C","D","E","F","↑","↓","←","→","Setting","R0","R1","R2","R3","R4","R5","R6","R7","R8","R9"],
+            connectionId:deviceIDs
+        }
     }
     return descriptor;
 }
@@ -704,8 +702,8 @@ else {// successfully connected
     ScratchExtensions.register('Makeblock mBot', myRegister(), ext);
     console.log("deviceIDs updated: ")
     console.log(deviceIDs);
-    }
-    setTimeout(getMakeblockAppStatus, 1000);
+}
+setTimeout(getMakeblockAppStatus, 1000);
 });
 };
 

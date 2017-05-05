@@ -707,7 +707,6 @@ else {// successfully connected
     console.log(descriptor);
     }
     setTimeout(getMakeblockAppStatus, 1000);
-}
 });
 };
 

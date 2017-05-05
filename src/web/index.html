@@ -63,7 +63,7 @@
         </div>
         <!-- <hid_connected v-bind:options="options" v-bind:selected="selected"></hid_connected> -->
         <template id="connected-template">
-          <select multiple style="width: 40%;min-height: 75px;float:right;">
+          <select v-model="connected_selected" multiple style="width: 40%;min-height: 75px;float:right;">
             <option v-for="option in connected_options" v-bind:value="option">
               {{ option.text }}
             </option>

@@ -15,6 +15,7 @@ define(function (require) {
           console.log(msg);
             switch(msg.event){
                 case DeviceEvent.DEVICE_ADDED:{
+                  console.log("DEVICE_ADDED");
                     for(i=0;i<self.devices.length;i++){
                         if(self.devices[i].deviceId==msg.device.deviceId){
                             return;
@@ -25,6 +26,7 @@ define(function (require) {
                 }
                 break;
                 case DeviceEvent.DEVICE_REMOVED:{
+                  console.log("DEVICE_REMOVED");
                     for(i=0;i<self.devices.length;i++){
                         if(self.devices[i].deviceId==msg.deviceId){
                             self.devices.splice(i,1);
@@ -34,10 +36,12 @@ define(function (require) {
                 }
                 break;
                 case DeviceEvent.DATA_RECEIVED:{
+                  console.log("DATA_RECEIVED");
                     self.emitter.emit(DeviceEvent.DATA_RECEIVED,msg.data);
                 }
                 break;
                 case DeviceEvent.COMMAND_RECEIVED:{
+                  console.log("COMMAND_RECEIVED");
                     var data = msg.data;
                     data.splice(0,1);
                     self.send(data);
@@ -58,6 +62,7 @@ define(function (require) {
             }));
         };
         self.connect = function(deviceId){
+          console.log("connect");
           return new Promise(((resolve)=>{
               function received(msg){
                   self.port.onMessage.removeListener(received);
@@ -87,6 +92,7 @@ define(function (require) {
             }));
         };
         self.poll = function(){
+          console.log("poll");
             self.port.postMessage({method:"poll",connectionId:self.connectionId});
         };
         self.send = function(data){

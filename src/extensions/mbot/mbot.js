@@ -585,7 +585,7 @@
         if(!device) return {status: 1, msg: 'Controller disconnected'};
         return {status: 2, msg: 'Controller connected'};
     }
-    
+
 	ext.sendmBot = function(connectionId){
 
 	}
@@ -627,7 +627,7 @@
 			["-"],
 			["R", "timer","getTimer", "0"],	
 			[" ", "reset timer","resetTimer", "0"],
-			["h", "mBot %m.connectionId() program", "sendmBot", 3]
+			["h", "mBot %m.connectionId program", "sendmBot", 3]
 			],
         menus: {
 			motorPort:["M1","M2"],
@@ -649,9 +649,7 @@
 			shutter:["Press","Release","Focus On","Focus Off"],
 			switchStatus:["Off","On"],
 			ircode:["A","B","C","D","E","F","↑","↓","←","→","Setting","R0","R1","R2","R3","R4","R5","R6","R7","R8","R9"],
-			connectionId:function() {
-                return deviceIDs
-            }
+			connectionId:deviceIDs
 		}
     };
     var makeblockAppID = "ejnknffhbfkcnblikdbeeigodiihjejj"; //unique app ID for Hummingbird Scratch App ogpaopffkincgenkbbiedlfleljflfkf

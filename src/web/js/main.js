@@ -35,7 +35,7 @@ define(function (require) {
     if(devices.length == 0){
       console.log("no devices found");
     } 
-    else{
+    else {
       for(var i=devices.length-1; i >= 0 ; i--){
         var device_id = devices[i].value;
         function checkConnected(hid){
@@ -60,9 +60,8 @@ define(function (require) {
         var index = disconnected_options.findIndex(findID);
         if(index > -1){
           disconnected_options.splice(index, 1);
-          console.log("disconnected options aangepast: " + hidDisconnected._data.options);
-          console.log("connected options aangepast: " + hidDisconnected._data.connected_options);
-        } else {
+        } 
+        else {
           console.log("something horrible went wrong ==> this shouldn't happen");
         }
         console.log("Device with id:" + device_id + " connected");
@@ -80,29 +79,29 @@ function removeElements(values, array){
       return obj.value == values[i].value;
     }
     index = array.findIndex(find);
-    array.splice(index, 1);
+    if(index != -1){
+      array.splice(index, 1);
+    }
   }
   return array;
 }
 
 var hid_connected = Vue.component('hid_connected', {
-  name: 'hid_connected',
-
   props: {
     connected_selected: 
-              { type: Array,
-                default: function () { return [] }
-              },
+    { type: Array,
+      default: function () { return [] }
+    },
     connected_options: 
-              {  type: Array,
-                default: function () { return [] }
-              }
+    {  type: Array,
+      default: function () { return [] }
+    }
   },
 
   template: '#connected-template',
 
   data: function () {
-    return this.connected_options
+    return data
   }
 });
 
@@ -112,40 +111,54 @@ var hidDisconnected = new Vue({
   data: {
     selected: [],
     options: [],
-    connected_options: []
+    connected_options: [],
+    connected_selected: []
   },
   methods: {
     connect_all: function(e) {
-      console.log("disconnected options: " + this.options);
-      console.log("connected options: " + this.connected_options);
-      connect(this.options);
-      this.options = [];
-      this.selected = [];
+      if(this.options.length != 0){
+        connect(this.options);
+        this.options = [];
+        this.selected = [];
+      } else {
+        console.log("no disconnected devices found");
+      }
     },
     connect_selected: function(e){
-      console.log("disconnected options: " + this.options);
-      console.log("connected options: " + this.connected_options);
-      this.options = removeElements(this.selected, this.options);
-      connect(this.selected);
-      this.selected = [];
+      if(this.selected.length != 0){
+        this.options = removeElements(this.selected, this.options);
+        connect(this.selected);
+        this.selected = [];
+      } else {
+        console.log("no disconnected devices selected");
+      }
     },
     disconnect_all: function(e){
-      console.log("disconnected options: " + this.options);
-      console.log("connected options: " + this.connected_options);
       var connected_options = this.connected_options;
       if(connected_options.length != 0){
         for(var i=0; i<connected_options.length; i++){
           this.options.push(connected_options[i]);
-          console.log("Device with id:" + connected_options[i].value + " disconnected");
         }
         this.connected_options = []; 
+        this.connected_selected = [];
         hids = [];
       } else {
-        console.log("no devices found");
+        console.log("no connected devices found");
       }
     },
     disconnect_selected: function(e){
-      console.log("hidDisconnected fault");
+      if(this.connected_selected.length != 0){
+        for(var i = 0; i<this.connected_selected.length; i++){
+          var connected_selected = this.connected_selected[i];
+          var device_id = connected_selected.value;
+          hids = removeElements([new HID(device_id)], hids);
+          this.options.push(connected_selected);
+        }
+        this.connected_options = removeElements(this.connected_selected, this.connected_options);
+        this.connected_selected = [];
+      } else {
+        console.log("no connected devices selected")
+      }
     }
   }
 });
@@ -217,29 +230,54 @@ function updateSerial(){
   });
 }
 function updateHID(){
+  console.log("-----------updateHID------------");
   hid.list().then(function(devices){
-    updateHIDList(devices);
-  });
+  //if device removed
+  console.log("devices.length = " + devices.length);
+  console.log("prev_devices.length = " + prev_devices.length);
+  if(devices.length<prev_devices.length){
+    //get the removed devices
+    var removed = removeElements(devices, prev_devices);
+    console.log("removed");
+    console.log(removed);
+
+    //remove them from connected selected
+    console.log("connected_options before");
+    console.log(hidDisconnected._data.connected_options);
+    hidDisconnected._data.connected_options = removeElements(removed, hidDisconnected._data.connected_options);
+    console.log("connected_options after");
+    console.log(hidDisconnected._data.connected_options);
+  } 
+  console.log("after");
+  updateHIDList(devices);
+  prev_devices = devices.slice();
+  console.log("setted to => prev_devices.length = " + prev_devices.length);
+  console.log("-----------updateHID-end---------");
+});
 }
 function updateBluetooth(){
   bluetooth.list().then(function(devices){
     updateBluetoothList(devices);
   });
 }
+var prev_devices = [];
 updateSerial();
 updateHID();
 updateBluetooth();
 hid.on(DeviceEvent.DEVICES_UPDATE,function(devices){
-  updateHIDList(devices);
+  console.log("hid.on");
+  updateHID();
 });
 bluetooth.on(DeviceEvent.DEVICES_UPDATE,function(devices){
   updateBluetoothList(devices);
 });
 function updateHIDList(devices){
+  console.log("updateHIDList");
   var options = [];
   for(var i=0;i<devices.length;i++){
-    options.push({ text: devices[i].productName + " " +devices[i].deviceId, value: devices[i].deviceId });
+    options.push({ text: devices[i].productName + " " + devices[i].deviceId, value: devices[i].deviceId });
   }
+  //add devices to disconnected options
   hidDisconnected._data.options = options;
 }
 function updateSerialList(devices){

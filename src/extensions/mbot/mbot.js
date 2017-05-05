@@ -1,5 +1,5 @@
 {(function(ext) {
-    
+
     var poller = null;
     var device = null;
     var status = false;
@@ -643,7 +643,7 @@
         });
         mStatus = 2;
         if(JSON.stringify(deviceIDs) != JSON.stringify(newdeviceIDs)){
-            deviceIDs = response.deviceIDs;
+            deviceIDs = newdeviceIDs;
             ScratchExtensions.unregister('Makeblock mBot');
             ScratchExtensions.register('Makeblock mBot', myRegister(), ext);
         };

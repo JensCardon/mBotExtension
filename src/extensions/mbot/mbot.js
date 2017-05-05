@@ -626,7 +626,7 @@ var blocks = [
 ["-"],
 ["R", "timer","getTimer", "0"], 
 [" ", "reset timer","resetTimer", "0"],
-["h", "mBot %m.connectionId program", "sendmBot", deviceIDs[0]]
+["h", "mBot %m.connectionId program", "sendmBot"]
 ];
 
 var menus = {
@@ -652,10 +652,10 @@ var menus = {
     connectionId:deviceIDs
 };
 
-var descriptor = {
-    blocks: blocks,
-    menus: menus
-};
+// var descriptor = {
+//     blocks: blocks,
+//     menus: menus
+// };
 
 function myRegister() {
     var descriptor = {
@@ -699,13 +699,12 @@ else {// successfully connected
         mConnection.onMessage.addListener(onMsgApp);
     }
     mStatus = 2;
-    if(deviceIDs.length == 0){
-        deviceIDs = response.deviceIDs;
-        ScratchExtensions.unregister('Makeblock mBot');
-        ScratchExtensions.register('Makeblock mBot', myRegister(), ext);
-        console.log("deviceIDs updated: ")
-        console.log(deviceIDs);
-        console.log(descriptor);
+    deviceIDs = response.deviceIDs;
+    ScratchExtensions.unregister('Makeblock mBot');
+    ScratchExtensions.register('Makeblock mBot', myRegister(), ext);
+    console.log("deviceIDs updated: ")
+    console.log(deviceIDs);
+    console.log(descriptor);
     }
     setTimeout(getMakeblockAppStatus, 1000);
 }
@@ -720,5 +719,5 @@ function onMsgApp(msg) {
     }
 };
 getMakeblockAppStatus();
-ScratchExtensions.register('Makeblock mBot', descriptor, ext, {type: 'hid', vendor:0x0416,product:0xffff});
+ScratchExtensions.register('Makeblock mBot', myRegister(), ext);
 })({});}

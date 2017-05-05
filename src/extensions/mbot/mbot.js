@@ -92,35 +92,36 @@
                 var type = _buffer[position];
                 position+=1;
                 var value = 0;
-// 1 byte 2 float 3 short 4 len+string 5 double
-if (type == 1){
-    value = _buffer[position];
-}
-if (type == 2){
-    value = readFloat(position);
-    if(value<-255 || value>1023){
-        value = 0;
+                // 1 byte 2 float 3 short 4 len+string 5 double
+                if (type == 1){
+                    value = _buffer[position];
+                }
+                if (type == 2){
+                    value = readFloat(position);
+                    if(value<-255 || value>1023){
+                        value = 0;
+                    }
+                }
+                if (type == 3){
+                    value = readShort(position);
+                }
+                if (type == 4){
+                    value = readString(position);
+                }
+                if (type == 5){
+                    value = readDouble(position);
+                }
+                if(type<=5){
+                    if(value!=null){
+                        _selectors["value_"+extId] = value;
+                    }
+                    _selectors["callback_"+extId](value);
+                }
+                _buffer = []
+            }
+        }
     }
-}
-if (type == 3){
-    value = readShort(position);
-}
-if (type == 4){
-    value = readString(position);
-}
-if (type == 5){
-    value = readDouble(position);
-}
-if(type<=5){
-    if(value!=null){
-        _selectors["value_"+extId] = value;
-    }
-    _selectors["callback_"+extId](value);
-}
-_buffer = []
-}
-}
-}
+
 function readFloat(position){
     var buf = new ArrayBuffer(4);
     var intView = new Uint8Array(buf);
@@ -282,6 +283,8 @@ ext.runLedOnBoard = function(index,red,green,blue){
     runLed(7,2,index,red,green,blue)
 }
 ext.runLed = function(port,slot,index,red,green,blue){
+
+    console.log("in runled");
     if(typeof port == "string"){
         port = ports[port];
     }
@@ -629,11 +632,6 @@ var blocks = [
 ["h", "mBot %m.connectionId program", "sendmBot"]
 ];
 
-// var descriptor = {
-//     blocks: blocks,
-//     menus: menus
-// };
-
 function myRegister() {
     var descriptor = {
         blocks: blocks,
@@ -699,7 +697,7 @@ else {// successfully connected
     mStatus = 2;
     var newdeviceIDs = response.deviceIDs;
     if(JSON.stringify(deviceIDs) != JSON.stringify(newdeviceIDs)){
-        deviceIDs = newdeviceIDs;
+        deviceIDs = response.deviceIDs;
         ScratchExtensions.unregister('Makeblock mBot');
         ScratchExtensions.register('Makeblock mBot', myRegister(), ext);
         console.log("deviceIDs updated: ")

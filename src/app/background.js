@@ -212,6 +212,7 @@ function setupHID(port){
             }
             if(len>0){
               scratchPort.postMessage({buffer:buffer});
+              console.log("__DATA_RECEIVED__");
               port.postMessage({event:"__DATA_RECEIVED__",data:buffer});
             }
             clearTimeout(interval);
@@ -223,9 +224,11 @@ function setupHID(port){
       }
     });
     chrome.hid.onDeviceAdded.addListener(function(device){
+      console.log("__DEVICE_ADDED__");
         port.postMessage({event:"__DEVICE_ADDED__",device:device});
     });
     chrome.hid.onDeviceRemoved.addListener(function(deviceId){
+      console.log("__DEVICE_REMOVED__");
         port.postMessage({event:"__DEVICE_REMOVED__",deviceId:deviceId});
     });
 }

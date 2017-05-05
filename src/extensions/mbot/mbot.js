@@ -639,7 +639,7 @@
                 mConnection = chrome.runtime.connect(makeblockAppID);
                 mConnection.onMessage.addListener(onMsgApp);
             }
-            if(response.deviceIDs !== undefined){
+            if(response !== undefined && response.deviceIDs !== undefined){
                 newdeviceIDs = response.deviceIDs;
             }
         });

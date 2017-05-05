@@ -639,20 +639,19 @@
                 mConnection = chrome.runtime.connect(makeblockAppID);
                 mConnection.onMessage.addListener(onMsgApp);
             }
+            mStatus = 2;
             if(response !== undefined && response.deviceIDs !== undefined){
-                newdeviceIDs = response.deviceIDs;
+                if(JSON.stringify(deviceIDs) != JSON.stringify(response.deviceIDs)){
+                    deviceIDs = response.deviceIDs;
+                    ScratchExtensions.unregister('Makeblock mBot');
+                    ScratchExtensions.register('Makeblock mBot', myRegister(), ext);
+                };
+                setTimeout(getMakeblockAppStatus, 1000);
             }
         });
-        mStatus = 2;
-        if(JSON.stringify(deviceIDs) != JSON.stringify(newdeviceIDs)){
-            deviceIDs = newdeviceIDs;
-            ScratchExtensions.unregister('Makeblock mBot');
-            ScratchExtensions.register('Makeblock mBot', myRegister(), ext);
-        };
-        setTimeout(getMakeblockAppStatus, 1000);
-    };
-    getMakeblockAppStatus();
-    ScratchExtensions.register('Makeblock mBot', myRegister(), ext);
+};
+getMakeblockAppStatus();
+ScratchExtensions.register('Makeblock mBot', myRegister(), ext);
 }
 )
 ({});}

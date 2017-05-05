@@ -592,7 +592,7 @@ ext.sendmBot = function(connectionId){
 
 var deviceIDs = [];
 
-var blocks: [
+var blocks = [
     [" ", "move left %d.motorvalue right %d.motorvalue","runBot", 100, 100],
     [" ", "set motor%d.motorPort speed %d.motorvalue","runMotor", "M1", 0],
     [" ", "set servo %d.port %d.slot angle %d.servovalue","runServo", "Port1","Slot1", 90],
@@ -627,7 +627,7 @@ var blocks: [
     ["R", "timer","getTimer", "0"], 
     [" ", "reset timer","resetTimer", "0"],
     ["h", "mBot %m.connectionId program", "sendmBot"]
-    ]
+    ];
 
 var descriptor = {
     blocks: blocks,

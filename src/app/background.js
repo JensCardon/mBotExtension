@@ -234,6 +234,7 @@ function setupHID(port){
 }
 
 chrome.runtime.onConnectExternal.addListener(function(port){
+  console.log(port);
   scratchPort = port;
   scratchPort.onMessage.addListener(function(msg){
     for(var i in ports){
@@ -258,8 +259,6 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
         });
       resp.status = true;
       resp.deviceIDs = deviceIDslist;
-      console.log("resp.deviceIDs : ");
-      console.log(resp.deviceIDs);
       sendResponse(resp);
     }
 });

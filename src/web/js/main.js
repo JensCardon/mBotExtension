@@ -214,8 +214,7 @@ var scratchPanel = new Vue({
   methods:{
     openProject:function(){
       window.open('http://scratchx.org/?url=https://jenscardon.github.io/mBotExtension/src/extensions/mbot/mbot.js&id='+chrome.runtime.id+'#scratch');
-        //window.open('http://scratchx.org/?url=http://mbotx.github.io/scratchx-mbot/makeblock.js&id='+chrome.runtime.id+'#scratch');
-
+      //window.open('http://scratchx.org/?url=http://mbotx.github.io/scratchx-mbot/makeblock.js&id='+chrome.runtime.id+'#scratch');
       },
       refresh:function(){
         updateSerial();

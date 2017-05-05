@@ -258,6 +258,8 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
         });
       resp.status = true;
       resp.deviceIDs = deviceIDslist;
+      console.log("resp.deviceIDs : ");
+      console.log(resp.deviceIDs);
       sendResponse(resp);
     }
 });

@@ -637,6 +637,7 @@
             else if (mStatus !== 2) {
                 console.log("Connected");
                 mConnection = chrome.runtime.connect(makeblockAppID);
+                console.log(mConnection);
                 mConnection.onMessage.addListener(onMsgApp);
             }
             mStatus = 2;

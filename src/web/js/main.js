@@ -86,6 +86,20 @@ function removeElements(values, array){
   return array;
 }
 
+function remove_Disconnect_Elements(values, array){
+  for(var i = 0; i<values.length; i++){
+    function find(obj){
+      return obj.value == values[i].value;
+    }
+    index = array.findIndex(find);
+    if(index != -1){
+      obj.disconnect();
+      array.splice(index, 1);
+    }
+  }
+  return array;
+}
+
 var hid_connected = Vue.component('hid_connected', {
   props: {
     connected_selected: 
@@ -137,6 +151,7 @@ var hidDisconnected = new Vue({
       var connected_options = this.connected_options;
       if(connected_options.length != 0){
         for(var i=0; i<connected_options.length; i++){
+          hids[i].disconnect();
           this.options.push(connected_options[i]);
         }
         this.connected_options = []; 
@@ -151,7 +166,7 @@ var hidDisconnected = new Vue({
         for(var i = 0; i<this.connected_selected.length; i++){
           var connected_selected = this.connected_selected[i];
           var device_id = connected_selected.value;
-          hids = removeElements([new HID(device_id)], hids);
+          hids = remove_Disconnect_Elements([new HID(device_id)], hids);
           this.options.push(connected_selected);
         }
         this.connected_options = removeElements(this.connected_selected, this.connected_options);

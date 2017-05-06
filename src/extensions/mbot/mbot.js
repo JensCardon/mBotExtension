@@ -529,7 +529,7 @@
     };
 
     ext.sendmBot = function(connectionId){
-
+        console.log("connectionId: " + connectionId);
     };
     var deviceIDs = [];
     var blocks = [

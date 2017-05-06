@@ -79,6 +79,7 @@ define(function (require) {
             }));
         };
         self.disconnect = function(){
+          console.log("in disconnect");
             return new Promise(((resolve)=>{
               function received(msg){
                   self.port.onMessage.removeListener(received);

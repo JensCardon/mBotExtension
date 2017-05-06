@@ -150,7 +150,7 @@ function setupBluetooth(port){
 function setupHID(port){
     var interval;
     port.onMessage.addListener(function(msg) {
-      console.log("-----------setupHID----------");
+      console.log("-----------BG-listener----------");
       console.log(msg);
       if(msg.method=="list"){
         chrome.hid.getDevices({vendorId:0x0416,productId:0xffff},function(devices){
@@ -185,9 +185,6 @@ function setupHID(port){
             hidConnected = false;
         });
       }else if(msg.method=="send"){
-        console.log("-----bg: SEND------");
-        console.log("msg");
-        console.log(msg);
         if(!hidConnected || msg.connectionId == -1){
           return;
         }
@@ -197,14 +194,11 @@ function setupHID(port){
         for(var i=0;i<len;i++){
           bytes[i+1] = msg.data[i];
         }
+        console.log("sending to connectionId: " + msg.connectionId);
         chrome.hid.send(msg.connectionId, 0, bytes.buffer, function() {
             port.postMessage({method:msg.method,data:msg.data});
         });
-        console.log("message send");
       }else if(msg.method=="poll"){
-        console.log("-----bg: POLL------");
-        console.log("msg");
-        console.log(msg);
         function poll(){
           chrome.hid.receive(msg.connectionId, function(reportId,data) {
             var bytes = new Uint8Array(data);
@@ -227,16 +221,21 @@ function setupHID(port){
       }
     });
     chrome.hid.onDeviceAdded.addListener(function(device){
-      console.log("__DEVICE_ADDED__");
         port.postMessage({event:"__DEVICE_ADDED__",device:device});
     });
     chrome.hid.onDeviceRemoved.addListener(function(deviceId){
-      console.log("__DEVICE_REMOVED__");
         port.postMessage({event:"__DEVICE_REMOVED__",deviceId:deviceId});
     });
 }
+chrome.runtime.onConnectExternal.addListener(function(port){
+  scratchPort = port;
+  scratchPort.onMessage.addListener(function(msg){
+    for(var i in ports){
+      ports[i].postMessage({event:"__COMMAND_RECEIVED__",data:msg.buffer});
+    }
+  });
+});
 chrome.runtime.onMessageExternal.addListener(function(request, sender, sendResponse) {
-  console.log("onMessageExternal");
     var resp = {};
     if(ports.length==0){
       resp.status = false;
@@ -256,7 +255,6 @@ chrome.runtime.onMessageExternal.addListener(function(request, sender, sendRespo
     }
 });
 chrome.runtime.onConnect.addListener(function(port){
-  console.log(port);
   ports.push(port);
   if(port.name=="hid"){
     setupHID(port);
@@ -265,15 +263,4 @@ chrome.runtime.onConnect.addListener(function(port){
   }else if(port.name=="bluetooth"){
     setupBluetooth(port);
   }
-});
-chrome.runtime.onConnectExternal.addListener(function(port){
-  console.log("onConnectExternal");
-  console.log(port);
-  scratchPort = port;
-  scratchPort.onMessage.addListener(function(msg){
-    console.log("onMessage.addListener");
-    for(var i in ports){
-      ports[i].postMessage({event:"__COMMAND_RECEIVED__",data:msg.buffer});
-    }
-  });
 });

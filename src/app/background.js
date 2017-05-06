@@ -150,8 +150,6 @@ function setupBluetooth(port){
 function setupHID(port){
     var interval;
     port.onMessage.addListener(function(msg) {
-      console.log("-----------BG-listener----------");
-      console.log(msg);
       if(msg.method=="list"){
         chrome.hid.getDevices({vendorId:0x0416,productId:0xffff},function(devices){
           port.postMessage({method:msg.method,devices:devices});
@@ -194,7 +192,6 @@ function setupHID(port){
         for(var i=0;i<len;i++){
           bytes[i+1] = msg.data[i];
         }
-        console.log("sending to connectionId: " + msg.connectionId);
         chrome.hid.send(msg.connectionId, 0, bytes.buffer, function() {
             port.postMessage({method:msg.method,data:msg.data});
         });
@@ -209,7 +206,6 @@ function setupHID(port){
             }
             if(len>0){
               scratchPort.postMessage({buffer:buffer});
-              console.log("__DATA_RECEIVED__");
               port.postMessage({event:"__DATA_RECEIVED__",data:buffer});
             }
             clearTimeout(interval);
@@ -232,10 +228,9 @@ chrome.runtime.onConnectExternal.addListener(function(port){
   scratchPort.onMessage.addListener(function(msg){
     for(var i in ports){
       console.log("-------onMessage-------");
-      console.log(ports);
-      console.log(msg);
-      if(msg.connectionId != undefined){
-        console.log("send to mbot with id: " + msg.connectionId);
+      if(msg.deviceID != undefined){
+        console.log("send to mbot with id: " + msg.deviceID);
+        ports[i].postMessage({event:"__COMMAND_RECEIVED__",data:msg.buffer, deviceID:msg.deviceID});
       } else {
         ports[i].postMessage({event:"__COMMAND_RECEIVED__",data:msg.buffer});
       }

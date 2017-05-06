@@ -185,6 +185,7 @@
     var lastWritten = 0;
     var _buffers = [];
     var _isWaiting = false;
+
     function addPackage(buffer,callback){
         _buffers.push(buffer);
         var extId = buffer[4];
@@ -264,8 +265,6 @@
         runLed(7,2,index,red,green,blue)
     };
     ext.runLed = function(port,slot,index,red,green,blue){
-
-        console.log("in runled");
         if(typeof port == "string"){
             port = ports[port];
         }
@@ -528,22 +527,10 @@
         addPackage(arrayBufferFromArray(data), _selectors["callback_"+extId]);
     };
 
-    ext.sendmBot = function(connectionId){
-        console.log("connectionId: " + connectionId);
-        if(_buffers.length>0&&_isWaiting==false){
-            _isWaiting = true;
-            var buffer = _buffers[0];
-            _buffers.shift();
-            var msg = {};
-            msg.buffer = buffer;
-            msg.connectionId = connectionId;
-            mConnection.postMessage(msg);
-            setTimeout(function(){
-                _isWaiting = false;
-                writePackage();
-            },20); 
-        }
+    ext.sendmBot = function(deviceID){
+
     };
+
     var deviceIDs = [];
     var blocks = [
     [" ", "move left %d.motorvalue right %d.motorvalue","runBot", 100, 100],
@@ -631,9 +618,7 @@
         status = false;
     };
     function getMakeblockAppStatus() {
-        console.log("in getMakeblockAppStatus");
         chrome.runtime.sendMessage(makeblockAppID, {message: "STATUS"}, function (response) {
-            console.log(response);
             if (response === undefined) {
                 console.log("Chrome app not found");
                 mStatus = 0;

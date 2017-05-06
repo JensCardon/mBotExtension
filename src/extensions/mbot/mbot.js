@@ -527,10 +527,6 @@
         _selectors["callback_"+extId] = callback;
         addPackage(arrayBufferFromArray(data), _selectors["callback_"+extId]);
     };
-    var device = null;
-    var input = null;
-    var poller = null;
-    var ext = this;
 
     ext.sendmBot = function(connectionId){
 

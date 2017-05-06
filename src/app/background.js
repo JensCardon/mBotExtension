@@ -231,7 +231,15 @@ chrome.runtime.onConnectExternal.addListener(function(port){
   scratchPort = port;
   scratchPort.onMessage.addListener(function(msg){
     for(var i in ports){
-      ports[i].postMessage({event:"__COMMAND_RECEIVED__",data:msg.buffer});
+      console.log("-------onMessage-------");
+      console.log(ports);
+      console.log(msg);
+      if(msg.connectionId != undefined){
+        console.log("send to mbot with id: " + msg.connectionId);
+      } else {
+        ports[i].postMessage({event:"__COMMAND_RECEIVED__",data:msg.buffer});
+      }
+      console.log("-------after-------");
     }
   });
 });

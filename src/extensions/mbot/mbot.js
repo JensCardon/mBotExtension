@@ -530,6 +530,19 @@
 
     ext.sendmBot = function(connectionId){
         console.log("connectionId: " + connectionId);
+        if(_buffers.length>0&&_isWaiting==false){
+            _isWaiting = true;
+            var buffer = _buffers[0];
+            _buffers.shift();
+            var msg = {};
+            msg.buffer = buffer;
+            msg.connectionId = connectionId;
+            mConnection.postMessage(msg);
+            setTimeout(function(){
+                _isWaiting = false;
+                writePackage();
+            },20); 
+        }
     };
     var deviceIDs = [];
     var blocks = [

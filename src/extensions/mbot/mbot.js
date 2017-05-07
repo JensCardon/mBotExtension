@@ -186,7 +186,7 @@
     var _buffers = [];
     var _isWaiting = false;
     var mbotProgramId = undefined;
-    var locked = true;
+    var locked = false;
 
     function addPackage(buffer,callback){
         _buffers.push(buffer);

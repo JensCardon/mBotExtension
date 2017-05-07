@@ -570,7 +570,7 @@
     ["-"],
     ["R", "timer","getTimer", "0"], 
     [" ", "reset timer","resetTimer", "0"],
-    ["h", "mBot %d.connectionId program", "sendmBot"]
+    ["h", "mBot %n.connectionId program", "sendmBot"]
     ];
 
     function myRegister() {

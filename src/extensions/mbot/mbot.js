@@ -533,6 +533,7 @@
     ext.sendmBot = function(deviceID){
         console.log("in sendmBot");
         mbotProgramId = parseInt(deviceID);
+        return false;
     };
 
     var deviceIDs = [];

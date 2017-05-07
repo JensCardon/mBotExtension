@@ -11,7 +11,7 @@ define(function (require) {
   //ogpaopffkincgenkbbiedlfleljflfkf
   console.log("id:",chrome.runtime.id);
   const self = this;
-  var hid = new HID();
+  var hid = new HID(-1);
   var hids = [];
   var serial = new Serial();
   var bluetooth = new Bluetooth();
@@ -41,11 +41,11 @@ define(function (require) {
         function checkConnected(hid){
           return hid.deviceId == device_id;
         }
-      //connect device if not already connected
-      if(hids.find(checkConnected) === undefined){
-        var hid = new HID(device_id);
-        hid.connect(device_id);
-        hids.push(hid);
+        //connect device if not already connected
+        if(hids.find(checkConnected) === undefined){
+        var _hid = new HID(device_id);
+        _hid.connect(device_id);
+        hids.push(_hid);
 
         //add to HID connected
         var connected_options = hidDisconnected._data.connected_options;
@@ -278,7 +278,6 @@ updateSerial();
 updateHID();
 updateBluetooth();
 hid.on(DeviceEvent.DEVICES_UPDATE,function(devices){
-  console.log("hid.on");
   updateHID();
 });
 bluetooth.on(DeviceEvent.DEVICES_UPDATE,function(devices){

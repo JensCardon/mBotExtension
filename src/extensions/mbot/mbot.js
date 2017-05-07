@@ -185,7 +185,7 @@
     var lastWritten = 0;
     var _buffers = [];
     var _isWaiting = false;
-    var mbotProgramId;
+    var mbotProgramId = undefined;
 
     function addPackage(buffer,callback){
         _buffers.push(buffer);
@@ -531,9 +531,7 @@
     };
 
     ext.sendmBot = function(deviceID){
-        console.log("in sendmBot");
         mbotProgramId = parseInt(deviceID);
-        return false;
     };
 
     var deviceIDs = [];
@@ -571,7 +569,7 @@
     ["-"],
     ["R", "timer","getTimer", "0"], 
     [" ", "reset timer","resetTimer", "0"],
-    ["h", "mBot %d.connectionId program", "sendmBot"]
+    ["h", "mBot %d.connectionId program", "sendmBot", "-"]
     ];
 
     function myRegister() {

@@ -8,14 +8,12 @@ define(function (require) {
         self.emitter = new EventEmitter();
         self.buffer = [];
         self.devices = [];
-        self.port = chrome.runtime.connect({name: "hid"});
+        self.port = chrome.runtime.connect({name: "hid-"+deviceId});
         var i=0;
         function updateHandle(msg){
-          console.log("in updateHandle; time: " + Date.now());
-          console.log(msg);
             switch(msg.event){
                 case DeviceEvent.DEVICE_ADDED:{
-                  console.log("DEVICE_ADDED");
+                    console.log("DEVICE_ADDED");
                     for(i=0;i<self.devices.length;i++){
                         if(self.devices[i].deviceId==msg.device.deviceId){
                             return;
@@ -26,7 +24,7 @@ define(function (require) {
                 }
                 break;
                 case DeviceEvent.DEVICE_REMOVED:{
-                  console.log("DEVICE_REMOVED");
+                    console.log("DEVICE_REMOVED");
                     for(i=0;i<self.devices.length;i++){
                         if(self.devices[i].deviceId==msg.deviceId){
                             self.devices.splice(i,1);
@@ -36,12 +34,11 @@ define(function (require) {
                 }
                 break;
                 case DeviceEvent.DATA_RECEIVED:{
-                  console.log("DATA_RECEIVED");
+                    console.log("DATA_RECEIVED");
                     self.emitter.emit(DeviceEvent.DATA_RECEIVED,msg.data);
                 }
                 break;
                 case DeviceEvent.COMMAND_RECEIVED:{
-                  console.log("COMMAND_RECEIVED");
                   if(msg.deviceID !== undefined && msg.deviceID == self.deviceId){
                     console.log("COMMAND_RECEIVED: send to device with id: " + msg.deviceID);
                     var data = msg.data;
@@ -50,6 +47,7 @@ define(function (require) {
                     break;
                   }
                   else {
+                    console.log("COMMAND_RECEIVED");
                     var data = msg.data;
                     data.splice(0,1);
                     self.send(data);
@@ -86,7 +84,6 @@ define(function (require) {
             }));
         };
         self.disconnect = function(){
-          console.log("in disconnect");
             return new Promise(((resolve)=>{
               function received(msg){
                   self.port.onMessage.removeListener(received);
@@ -101,7 +98,6 @@ define(function (require) {
             }));
         };
         self.poll = function(){
-          console.log("poll");
             self.port.postMessage({method:"poll",connectionId:self.connectionId});
         };
         self.send = function(data){

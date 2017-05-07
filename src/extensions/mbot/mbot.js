@@ -185,6 +185,7 @@
     var lastWritten = 0;
     var _buffers = [];
     var _isWaiting = false;
+    var mbotProgramId;
 
     function addPackage(buffer,callback){
         _buffers.push(buffer);
@@ -201,10 +202,12 @@
             _buffers.shift();
             var msg = {};
             msg.buffer = buffer;
+            msg.deviceID = mbotProgramId;
             mConnection.postMessage(msg);
             setTimeout(function(){
                 _isWaiting = false;
                 writePackage();
+                mbotProgramId = undefined;
             },20); 
         }
     };
@@ -528,7 +531,7 @@
     };
 
     ext.sendmBot = function(deviceID){
-
+        mbotProgramId = deviceID;
     };
 
     var deviceIDs = [];

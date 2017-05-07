@@ -531,6 +531,7 @@
     };
 
     ext.sendmBot = function(deviceID){
+        console.log("in sendmBot");
         mbotProgramId = deviceID;
     };
 
@@ -569,7 +570,7 @@
     ["-"],
     ["R", "timer","getTimer", "0"], 
     [" ", "reset timer","resetTimer", "0"],
-    ["h", "mBot %m.connectionId program", "sendmBot"]
+    ["h", "mBot %d.connectionId program", "sendmBot"]
     ];
 
     function myRegister() {

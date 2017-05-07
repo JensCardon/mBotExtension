@@ -43,6 +43,7 @@ define(function (require) {
                 case DeviceEvent.COMMAND_RECEIVED:{
                   console.log("COMMAND_RECEIVED");
                   if(msg.deviceID !== undefined && msg.deviceID == self.deviceId){
+                    console.log("COMMAND_RECEIVED: send to device with id: " + msg.deviceID);
                     var data = msg.data;
                     data.splice(0,1);
                     self.send(data);

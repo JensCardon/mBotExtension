@@ -186,6 +186,7 @@
     var _buffers = [];
     var _isWaiting = false;
     var mbotProgramId = undefined;
+    var locked = true;
 
     function addPackage(buffer,callback){
         _buffers.push(buffer);
@@ -208,6 +209,7 @@
                 _isWaiting = false;
                 writePackage();
                 mbotProgramId = undefined;
+                locked = false;
             },20); 
         }
     };
@@ -529,9 +531,11 @@
         _selectors["callback_"+extId] = callback;
         addPackage(arrayBufferFromArray(data), _selectors["callback_"+extId]);
     };
-
     ext.sendmBot = function(deviceID){
-        mbotProgramId = parseInt(deviceID);
+        if(!locked){
+            locked = true;
+            mbotProgramId = parseInt(deviceID);
+        }
     };
 
     var deviceIDs = [];

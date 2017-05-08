@@ -536,6 +536,26 @@
         var deviceId = 13;
         //getPackage(nextID,deviceId);
     }
+    function sendPackage(argList, type){
+        console.log(argList);
+        var bytes = [0xff, 0x55, 0, 0, type];
+        for(var i=0;i<argList.length;++i){
+            var val = argList[i];
+            if(val.constructor == "[class Array]"){
+                bytes = bytes.concat(val);
+            }else{
+                bytes.push(val);
+            }
+        }
+        bytes[2] = bytes.length - 3;
+        device.send(bytes);
+    }
+    function runPackage(){
+        sendPackage(arguments, 2);
+    }
+    ext.runIR = function(message){
+        runPackage(13,string2array(message));
+    };
 
     var deviceIDs = [];
     var blocks = [

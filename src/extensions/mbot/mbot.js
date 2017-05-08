@@ -532,11 +532,7 @@
     ext.sendmBot = function(deviceID){
         mbotProgramId = parseInt(deviceID);
     };
-    ext.getIR = function(nextID){
-        var deviceId = 13;
-        //getPackage(nextID,deviceId);
-    }
-    function sendPackage(argList, type){
+    function makePackage(argList, type){
         console.log(argList);
         var bytes = [0xff, 0x55, 0, 0, type];
         for(var i=0;i<argList.length;++i){
@@ -548,13 +544,23 @@
             }
         }
         bytes[2] = bytes.length - 3;
-        device.send(bytes);
     }
-    function runPackage(){
-        sendPackage(arguments, 2);
+    function getPackage(){
+        var nextID = arguments[0];
+        Array.prototype.shift.call(arguments);
+        addPackage(makePackage(arguments, 1), function(){
+        });
+    }
+    ext.getIR = function(nextID){
+        var deviceId = 13;
+        getPackage(nextID,deviceId);
     }
     ext.runIR = function(message){
-        runPackage(13,string2array(message));
+        var deviceId = 13;
+        var msg = string2array(message);
+        var argList = [deviceId, msg];
+        addPackage(makePackage(argList, 2), function(){
+        });
     };
 
     var deviceIDs = [];

@@ -186,7 +186,6 @@
     var _buffers = [];
     var _isWaiting = false;
     var mbotProgramId = undefined;
-    var locked = false;
 
     function addPackage(buffer,callback){
         _buffers.push(buffer);
@@ -209,7 +208,6 @@
                 _isWaiting = false;
                 writePackage();
                 mbotProgramId = undefined;
-                locked = false;
             },20); 
         }
     };
@@ -532,11 +530,12 @@
         addPackage(arrayBufferFromArray(data), _selectors["callback_"+extId]);
     };
     ext.sendmBot = function(deviceID){
-        if(!locked){
-            locked = true;
-            mbotProgramId = parseInt(deviceID);
-        }
+        mbotProgramId = parseInt(deviceID);
     };
+    ext.getIR = function(nextID){
+        var deviceId = 13;
+        //getPackage(nextID,deviceId);
+    }
 
     var deviceIDs = [];
     var blocks = [
@@ -573,7 +572,7 @@
     ["-"],
     ["R", "timer","getTimer", "0"], 
     [" ", "reset timer","resetTimer", "0"],
-    ["h", "mBot %d.connectionId program", "sendmBot", "-"]
+    ["h", "mBot %d.deviceId program", "sendmBot", "-"]
     ];
 
     function myRegister() {
@@ -599,7 +598,7 @@
                 shutter:["Press","Release","Focus On","Focus Off"],
                 switchStatus:["Off","On"],
                 ircode:["A","B","C","D","E","F","↑","↓","←","→","Setting","R0","R1","R2","R3","R4","R5","R6","R7","R8","R9"],
-                connectionId:deviceIDs
+                deviceId:deviceIDs
             }
         }
         return descriptor;

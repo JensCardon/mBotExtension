@@ -229,15 +229,19 @@ chrome.runtime.onConnectExternal.addListener(function(port){
   scratchPort.onMessage.addListener(function(msg){
     console.log("ports:");
     console.log(ports);
-    for(var i in ports){
-      var name = "hid-" + msg.deviceID;
-      if(msg.deviceID !== undefined && ports[i].name == name){
+    if(msg.deviceID !== undefined){
+      for(var i in ports){
+        var name = "hid-" + msg.deviceID;
+        if(ports[i].name == name){
           ports[i].postMessage({event:"__COMMAND_RECEIVED__",data:msg.buffer, deviceID:msg.deviceID});
-          break;
+          return;
+        }
       }
-      else {
+    }
+    else {
+      for (var i in ports) {
         ports[i].postMessage({event:"__COMMAND_RECEIVED__",data:msg.buffer});
-      }
+      };
     }
   });
 });

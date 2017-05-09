@@ -571,7 +571,7 @@
             }
         }
         bytes[2] = bytes.length - 3;
-        console.log("-------sending bytes: + " bytes + "-------");
+        console.log("-------sending bytes: + " + bytes + "-------");
         return bytes;
     }
     function getPackage(){

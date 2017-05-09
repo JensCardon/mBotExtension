@@ -571,7 +571,8 @@
             }
         }
         bytes[2] = bytes.length - 3;
-        console.log("-------sending bytes: + " + bytes + "-------");
+        console.log("sending bytes: ");
+        console.log(bytes);
         return bytes;
     }
     function getPackage(){
@@ -587,6 +588,7 @@
         getPackage(nextID,deviceId);
     }
     ext.runIR = function(message){
+        //255,85,4,0,2,13,104,101,108,108,111
         runPackage(13,string2array(message));
     };
     var deviceIDs = [];

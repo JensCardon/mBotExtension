@@ -559,13 +559,15 @@
         console.log(bytes);
     }
     function getPackage(){
-        console.log("getPackage arguments: " + arguments);
+        console.log("getPackage arguments: ");
+        console.log(arguments);
         var nextID = arguments[0];
         Array.prototype.shift.call(arguments);
         sendPackage(arguments, 1);
     }
     ext.getIR = function(nextID){
-        console.log("getIR arguments: " + arguments);
+        console.log("getIR arguments: ");
+        console.log(arguments);
         var deviceId = 13;
         getPackage(nextID,deviceId);
     }

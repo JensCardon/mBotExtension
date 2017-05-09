@@ -178,7 +178,6 @@
         for(var i=0;i<arr.length;i++){
             arr[i] = arr[i].charCodeAt(0);
         }
-        console.log(arr);
         return arr;
     };
 
@@ -533,7 +532,6 @@
         mbotProgramId = parseInt(deviceID);
     };
     function makePackage(argList, type){
-        console.log(argList);
         var bytes = [0xff, 0x55, 0, 0, type];
         for(var i=0;i<argList.length;++i){
             var val = argList[i];
@@ -545,20 +543,19 @@
         }
         bytes[2] = bytes.length - 3;
     }
-    function getPackage(){
+    ext.getIR = function(){
+        var deviceId = 13;
         var nextID = arguments[0];
         Array.prototype.shift.call(arguments);
-        addPackage(makePackage(arguments, 1), function(){
+        var pkg = makePackage(arguments, 1);
+        addPackage(pkg, function(){
         });
-    }
-    ext.getIR = function(nextID){
-        var deviceId = 13;
-        getPackage(nextID,deviceId);
     }
     ext.runIR = function(message){
         var deviceId = 13;
         var msg = string2array(message);
         var argList = [deviceId, msg];
+        var pkg = makePackage(argList, 2);
         addPackage(makePackage(argList, 2), function(){
         });
     };

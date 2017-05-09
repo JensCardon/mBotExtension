@@ -43,9 +43,9 @@ define(function (require) {
         }
         //connect device if not already connected
         if(hids.find(checkConnected) === undefined){
-        var _hid = new HID(device_id);
-        _hid.connect(device_id);
-        hids.push(_hid);
+          var _hid = new HID(device_id);
+          _hid.connect(device_id);
+          hids.push(_hid);
 
         //add to HID connected
         var connected_options = hidDisconnected._data.connected_options;
@@ -73,27 +73,13 @@ define(function (require) {
   }
 };
 
-function removeElements(values, array){
+function removeElements(values, array, comp){
   for(var i = 0; i<values.length; i++){
     function find(obj){
-      return obj.value == values[i].value;
+      return comp(obj, values[i]);
     }
     index = array.findIndex(find);
     if(index != -1){
-      array.splice(index, 1);
-    }
-  }
-  return array;
-}
-
-function remove_Disconnect_Elements(values, array){
-  for(var i = 0; i<values.length; i++){
-    function find(obj){
-      return obj.value == values[i].value;
-    }
-    index = array.findIndex(find);
-    if(index != -1){
-      obj.disconnect();
       array.splice(index, 1);
     }
   }
@@ -140,7 +126,10 @@ var hidDisconnected = new Vue({
     },
     connect_selected: function(e){
       if(this.selected.length != 0){
-        this.options = removeElements(this.selected, this.options);
+        function comp(comp1, comp2){
+          return comp1.value == comp2.value;
+        }
+        this.options = removeElements(this.selected, this.options, comp);
         connect(this.selected);
         this.selected = [];
       } else {
@@ -166,10 +155,21 @@ var hidDisconnected = new Vue({
         for(var i = 0; i<this.connected_selected.length; i++){
           var connected_selected = this.connected_selected[i];
           var device_id = connected_selected.value;
-          hids = remove_Disconnect_Elements([new HID(device_id)], hids);
+          function disconnect_comp(comp1, comp2){
+            if(comp1.value == comp2.value){
+                comp1.disconnect();
+                return true;
+            } else {
+              return false;
+            }
+          }
+          hids = removeElements([new HID(device_id)], hids, disconnect_comp);
           this.options.push(connected_selected);
         }
-        this.connected_options = removeElements(this.connected_selected, this.connected_options);
+        function comp(comp1, comp2){
+          return comp1.value == comp2.value;
+        }
+        this.connected_options = removeElements(this.connected_selected, this.connected_options, comp);
         this.connected_selected = [];
       } else {
         console.log("no connected devices selected")
@@ -230,42 +230,55 @@ var scratchPanel = new Vue({
     openProject:function(){
       window.open('http://scratchx.org/?url=https://jenscardon.github.io/mBotExtension/src/extensions/mbot/mbot.js&id='+chrome.runtime.id+'#scratch');
       //window.open('http://scratchx.org/?url=http://mbotx.github.io/scratchx-mbot/makeblock.js&id='+chrome.runtime.id+'#scratch');
-      },
-      refresh:function(){
-        updateSerial();
-        updateHID();
-        bluetooth.discover();
-      }
+    },
+    refresh:function(){
+      updateSerial();
+      updateHID();
+      bluetooth.discover();
     }
-  });
+  }
+});
 function updateSerial(){
   serial.list().then(function(devices){
     updateSerialList(devices);
   });
 }
 function updateHID(){
-  //console.log("-----------updateHID------------");
   hid.list().then(function(devices){
   //if device removed
   if(devices.length<prev_devices.length){
     //get the removed devices
-    var removed = removeElements(devices, prev_devices);
+    function comp(comp1, comp2){
+      return comp1.deviceId == comp2.deviceId;
+    }
+    var removed = removeElements(devices, prev_devices, comp);
     //remove them from connected selected
-    // console.log("devices:");
-    // console.log(devices);
-    // console.log("removed:");
-    // console.log(removed);
-    // console.log("connected_options before");
-    // console.log(hidDisconnected._data.connected_options);
-    // hidDisconnected._data.connected_options = removeElements(removed, hidDisconnected._data.connected_options);
-    // console.log("connected_options after");
-    // console.log(hidDisconnected._data.connected_options);
-  } 
-  updateHIDList(devices);
+    console.log(hidDisconnected._data.connected_options);
+    function _comp(comp1, comp2){
+      if(comp1.value == comp2.deviceId){
+        //search for hid with id comp1.value
+          function find(obj){
+            return obj.deviceId == comp1.value;
+          }
+          var index = hids.findIndex(find);
+          if(index != -1){
+            hids[index].disconnect();
+            hids.splice(index, 1);
+          }
+          return true;
+      } else {
+        return false;
+      }
+    }
+    hidDisconnected._data.connected_options = removeElements(removed, hidDisconnected._data.connected_options, _comp);
+    console.log(hidDisconnected._data.connected_options);
+  }
+  function __comp(comp1, comp2){
+    return comp1.deviceId == comp2.value;
+  }
   prev_devices = devices.slice();
-  //console.log("prev_devices:");
-  //console.log(prev_devices);
-  //console.log("-----------updateHID-end---------");
+  devices = removeElements(hidDisconnected._data.connected_options, devices, __comp);
+  updateHIDList(devices);
 });
 }
 function updateBluetooth(){

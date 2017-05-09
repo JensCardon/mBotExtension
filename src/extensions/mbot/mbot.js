@@ -531,7 +531,7 @@
     ext.sendmBot = function(deviceID){
         mbotProgramId = parseInt(deviceID);
     };
-/*    function makePackage(argList, type){
+    function makePackage(argList, type){
         var bytes = [0xff, 0x55, 0, 0, type];
         for(var i=0;i<argList.length;++i){
             var val = argList[i];
@@ -549,6 +549,8 @@
         var nextID = arguments[0];
         Array.prototype.shift.call(arguments);
         var pkg = makePackage(arguments, 1);
+        console.log("sending bytes: ");
+        console.log(pkg);
         addPackage(pkg, function(){
         });
     }
@@ -557,40 +559,45 @@
         var msg = string2array(message);
         var argList = [deviceId, msg];
         var pkg = makePackage(argList, 2);
-        addPackage(makePackage(argList, 2), function(){
-        });
-    };*/
-    function sendPackage(argList, type){
-        var bytes = [0xff, 0x55, 0, 0, type];
-        for(var i=0;i<argList.length;++i){
-            var val = argList[i];
-            if(val.constructor == "[class Array]"){
-                bytes = bytes.concat(val);
-            }else{
-                bytes.push(val);
-            }
-        }
-        bytes[2] = bytes.length - 3;
         console.log("sending bytes: ");
-        console.log(bytes);
-        return bytes;
-    }
-    function getPackage(){
-        var nextID = arguments[0];
-        Array.prototype.shift.call(arguments);
-        sendPackage(arguments, 1);
-    }
-    function runPackage(){
-        sendPackage(arguments, 2);
-    }
-    ext.getIR = function(nextID){
-        var deviceId = 13;
-        getPackage(nextID,deviceId);
-    }
-    ext.runIR = function(message){
-        //255,85,4,0,2,13,104,101,108,108,111
-        runPackage(13,string2array(message));
+        console.log(pkg);
+        addPackage(pkg, function(){
+        });
     };
+    // function sendPackage(argList, type){
+    //     var bytes = [0xff, 0x55, 0, 0, type];
+    //     for(var i=0;i<argList.length;++i){
+    //         var val = argList[i];
+    //         if(val.constructor == "[class Array]"){
+    //             bytes = bytes.concat(val);
+    //         }else{
+    //             bytes.push(val);
+    //         }
+    //     }
+    //     bytes[2] = bytes.length - 3;
+    //     console.log("sending bytes: ");
+    //     console.log(bytes);
+    //     return bytes;
+    // }
+    // function getPackage(){
+    //     var nextID = arguments[0];
+    //     Array.prototype.shift.call(arguments);
+    //     sendPackage(arguments, 1);
+    // }
+    // function runPackage(){
+    //     sendPackage(arguments, 2);
+    // }
+    // ext.getIR = function(nextID){
+    //     //get message
+    //     //[255, 85, 3, 0, 1, 13]
+    //     var deviceId = 13;
+    //     getPackage(nextID,deviceId);
+    // }
+    // ext.runIR = function(message){
+    //     //send hello
+    //     //[255,85,4,0,2,13,[104,101,108,108,111]]
+    //     runPackage(13,string2array(message));
+    // };
     var deviceIDs = [];
     var blocks = [
     [" ", "move left %d.motorvalue right %d.motorvalue","runBot", 100, 100],

@@ -544,15 +544,30 @@
         bytes[2] = bytes.length - 3;
         return bytes;
     }
-    ext.getIR = function(){
-        var deviceId = 13;
+    function sendPackage(argList, type){
+        var bytes = [0xff, 0x55, 0, 0, type];
+        for(var i=0;i<argList.length;++i){
+            var val = argList[i];
+            if(val.constructor == "[class Array]"){
+                bytes = bytes.concat(val);
+            }else{
+                bytes.push(val);
+            }
+        }
+        bytes[2] = bytes.length - 3;
+        console.log("bytes: ");
+        console.log(bytes);
+    }
+    function getPackage(){
+        console.log("getPackage arguments: " + arguments);
         var nextID = arguments[0];
         Array.prototype.shift.call(arguments);
-        var pkg = makePackage(arguments, 1);
-        console.log("sending bytes: ");
-        console.log(pkg);
-        addPackage(pkg, function(){
-        });
+        sendPackage(arguments, 1);
+    }
+    ext.getIR = function(nextID){
+        console.log("getIR arguments: " + arguments);
+        var deviceId = 13;
+        getPackage(nextID,deviceId);
     }
     ext.runIR = function(message){
         var deviceId = 13;
